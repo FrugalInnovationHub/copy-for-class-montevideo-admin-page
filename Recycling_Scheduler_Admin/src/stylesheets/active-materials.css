@@ -1,0 +1,31 @@
+li.material-item{
+  display: flex;
+  flex-direction: row;
+  width: 300px;
+  justify-content: space-evenly;
+
+}
+
+li.material-item > div{
+  width: 150px;
+  text-align: left;
+}
+
+li.material-item > div > button{
+  width: 50px;
+  height: 30px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+ul.material-items{
+  height: 60vh;
+  overflow-y: scroll;
+  width: 25vw;
+}
+
+.add-material{
+  margin: 3rem;
+}

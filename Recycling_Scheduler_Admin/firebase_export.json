@@ -1,0 +1,1831 @@
+{
+  "clients": [
+    {
+      "id": "2df10526-04fe-4693-a1ee-9db1dda206cd",
+      "data": {
+        "pickup_frequency": "Lu-Mi-Vi",
+        "id": "2df10526-04fe-4693-a1ee-9db1dda206cd",
+        "locations": [
+          {
+            "client": "2df10526-04fe-4693-a1ee-9db1dda206cd",
+            "contact_phone": "",
+            "id": "9e85364f-3ef5-47e2-b395-73ba5473e915",
+            "contact_name": "",
+            "name": "Edificio central",
+            "address": "Soriano 1234"
+          }
+        ],
+        "client_name": "Cliente Nuevo",
+        "contact_email": "mp@gmail.com",
+        "contact_name": "María Pérez",
+        "contact_phone": "+59899123456"
+      }
+    },
+    {
+      "id": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+      "data": {
+        "client_name": "WTC",
+        "id": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "contact_phone": "26222352",
+        "contact_name": "Marcelo Gularte",
+        "pickup_frequency": "Lu Ma Mi Ju Vi Do",
+        "locations": [
+          {
+            "contact_phone": "m.gularte@wtcmontevideo.com",
+            "client": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+            "name": "Torres 1 2 3",
+            "address": "WTC Torres 1 2 3",
+            "id": "05f334d4-9747-431d-abcd-7d17956013ad",
+            "contact_name": "Marcelo Gularte"
+          },
+          {
+            "client": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+            "address": "WTC Torre 4",
+            "contact_name": "Román Dabezíes",
+            "id": "20d0eba3-15bf-4146-8ad4-89ea048ab7b7",
+            "name": "Torre 4",
+            "contact_phone": "r.dabezies@wtcmontevideo.com"
+          }
+        ],
+        "contact_email": "m.gularte@wtcmontevideo.com"
+      }
+    },
+    {
+      "id": "45167e0b-40a6-4221-9a9a-5e4df4496f70",
+      "data": {
+        "contact_phone": "099987654",
+        "contact_name": "Carina Rodriguez",
+        "client_name": "Empresa Clave",
+        "contact_email": "cari@gmail.com",
+        "pickup_frequency": "Lu-Ma-Mi-Ju-Vi",
+        "id": "45167e0b-40a6-4221-9a9a-5e4df4496f70",
+        "locations": [
+          {
+            "contact_name": "Juan Pérez",
+            "name": "Oficina A",
+            "contact_phone": "099234567",
+            "id": "54ee5bfd-67d5-4db8-8f48-393b87edf865",
+            "client": "45167e0b-40a6-4221-9a9a-5e4df4496f70",
+            "address": "Rivera 1111"
+          },
+          {
+            "id": "f308ae67-ed73-4d97-bfcf-ac61cda9895a",
+            "client": "45167e0b-40a6-4221-9a9a-5e4df4496f70",
+            "contact_phone": "096 543210",
+            "address": "Ponce 9999",
+            "contact_name": "María González",
+            "name": "Oficina B"
+          },
+          {
+            "name": "Oficina C",
+            "client": "45167e0b-40a6-4221-9a9a-5e4df4496f70",
+            "contact_name": "",
+            "contact_phone": "",
+            "id": "101b10a2-f6d2-497a-b179-d2fa818d42be",
+            "address": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "6162c5b9-9e84-4bdf-9045-f82c8b50b86b",
+      "data": {
+        "locations": [
+          {
+            "contact_phone": "",
+            "client": "6162c5b9-9e84-4bdf-9045-f82c8b50b86b",
+            "contact_name": "",
+            "id": "3aeddf6f-a433-45c5-af37-c58da7b7b137",
+            "name": "Colegio",
+            "address": "Alejo Rosell y Rius 1641"
+          }
+        ],
+        "contact_name": "nombre_2",
+        "id": "6162c5b9-9e84-4bdf-9045-f82c8b50b86b",
+        "client_name": "Colegio San Ignacio",
+        "pickup_frequency": "Ma-Ju",
+        "contact_phone": "1231243",
+        "contact_email": "correo@corero2.com"
+      }
+    },
+    {
+      "id": "a71be043-6d28-4404-a681-9ab044166f9e",
+      "data": {
+        "id": "a71be043-6d28-4404-a681-9ab044166f9e",
+        "contact_name": "Marcelo Gonella",
+        "locations": [
+          {
+            "contact_phone": "",
+            "name": "Planta Casavalle",
+            "address": "Aparicio Saravia",
+            "contact_name": "",
+            "id": "efc14a40-9229-4973-9829-967464486d24"
+          },
+          {
+            "client": "a71be043-6d28-4404-a681-9ab044166f9e",
+            "address": "Dr. Luis Bonavita 1266",
+            "contact_name": "",
+            "contact_phone": "",
+            "name": "WTC 4",
+            "id": "922fd496-31f0-4b60-9239-47ab90f43e69"
+          }
+        ],
+        "contact_email": "mgonella@itau.com.uy",
+        "contact_phone": "+598 99 149 739",
+        "client_name": "Banco Itaú",
+        "pickup_frequency": "Lu-Ma-Mi-Ju-Vi"
+      }
+    }
+  ],
+  "users": [
+    {
+      "id": "03fd9cb6-45b2-47b7-bcab-d1e5dd3d3a0d",
+      "data": {
+        "last_name": "Pintos ",
+        "id": "03fd9cb6-45b2-47b7-bcab-d1e5dd3d3a0d",
+        "first_name": "Sofia ",
+        "role": "both"
+      }
+    },
+    {
+      "id": "30335b72-43cb-4627-bcec-01609a4e5929",
+      "data": {
+        "id": "30335b72-43cb-4627-bcec-01609a4e5929",
+        "role": "both",
+        "first_name": "Arllene",
+        "last_name": "Ychuste"
+      }
+    },
+    {
+      "id": "45f832ac-351a-4836-b1f5-7e40b7e0c265",
+      "data": {
+        "role": "both",
+        "last_name": "Rivero",
+        "id": "45f832ac-351a-4836-b1f5-7e40b7e0c265",
+        "first_name": "Antonio"
+      }
+    },
+    {
+      "id": "4cdaeda4-f5c0-4d14-bcfa-23108576122a",
+      "data": {
+        "role": "both",
+        "last_name": "González",
+        "id": "4cdaeda4-f5c0-4d14-bcfa-23108576122a",
+        "first_name": "Ignacio "
+      }
+    },
+    {
+      "id": "64151711-264f-437b-ba31-9076134f1aa9",
+      "data": {
+        "first_name": "Ma.Laura",
+        "role": "both",
+        "last_name": "Bergeret",
+        "id": "64151711-264f-437b-ba31-9076134f1aa9"
+      }
+    },
+    {
+      "id": "9a9e6919-75da-4b31-b03e-922091806a99",
+      "data": {
+        "role": "collector",
+        "id": "9a9e6919-75da-4b31-b03e-922091806a99",
+        "first_name": "Ana Laura",
+        "last_name": "Scarenzio"
+      }
+    },
+    {
+      "id": "b0e759f1-352f-43f9-a108-68c5e16839de",
+      "data": {
+        "role": "both",
+        "id": "b0e759f1-352f-43f9-a108-68c5e16839de",
+        "first_name": "José ",
+        "last_name": "Bozzano"
+      }
+    },
+    {
+      "id": "e56eb657-fcc1-4d1c-b159-07bd0418492c",
+      "data": {
+        "first_name": "Carolina ",
+        "id": "e56eb657-fcc1-4d1c-b159-07bd0418492c",
+        "last_name": "Rogberg",
+        "role": "both"
+      }
+    },
+    {
+      "id": "f984ed68-6050-4b50-9417-4d1b0096716b",
+      "data": {
+        "last_name": "Torres",
+        "id": "f984ed68-6050-4b50-9417-4d1b0096716b",
+        "role": "admin",
+        "first_name": "Arturo"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "Descarte",
+      "data": {}
+    },
+    {
+      "id": "Orgánicos",
+      "data": {}
+    },
+    {
+      "id": "Otros",
+      "data": {}
+    },
+    {
+      "id": "Papel y cartón",
+      "data": {}
+    },
+    {
+      "id": "Plásticos",
+      "data": {}
+    }
+  ],
+  "collections": [
+    {
+      "id": "0qjWziNN0eN22TZnwQju",
+      "data": {
+        "collections": [
+          {
+            "count": 28,
+            "weight": 42.3,
+            "materialId": "plasticos"
+          },
+          {
+            "count": 16,
+            "materialId": "organico",
+            "weight": 48.7
+          },
+          {
+            "count": 13,
+            "materialId": "papel_carton",
+            "weight": 47.2
+          }
+        ],
+        "classified": true,
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1746460800,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1746460800,
+          "nanoseconds": 0
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "id": "0qjWziNN0eN22TZnwQju",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1746460800,
+          "nanoseconds": 0
+        }
+      }
+    },
+    {
+      "id": "1REuuMbKwJu4aRD0crwD",
+      "data": {
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1732780800,
+          "nanoseconds": 0
+        },
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1732780800,
+          "nanoseconds": 0
+        },
+        "location": "mock-location-0kiguc",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1732780800,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "weight": 48,
+            "count": 16,
+            "materialId": "plasticos"
+          },
+          {
+            "count": 11,
+            "materialId": "papel_carton",
+            "weight": 65
+          },
+          {
+            "count": 9,
+            "weight": 125.5,
+            "materialId": "organico"
+          },
+          {
+            "count": 5,
+            "materialId": "descarte",
+            "weight": 20
+          }
+        ],
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "classified": false
+      }
+    },
+    {
+      "id": "3XTe15TTIYRotTBDYt65",
+      "data": {
+        "id": "3XTe15TTIYRotTBDYt65",
+        "collections": [
+          {
+            "weight": 65.8,
+            "materialId": "organico",
+            "count": 22
+          },
+          {
+            "weight": 58.4,
+            "materialId": "papel_carton",
+            "count": 16
+          },
+          {
+            "weight": 7.2,
+            "count": 3,
+            "materialId": "descarte"
+          }
+        ],
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1741467600,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1741467600,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1741467600,
+          "nanoseconds": 0
+        },
+        "classified": true
+      }
+    },
+    {
+      "id": "3Xh8BdpeID7Bcrj2KxWV",
+      "data": {
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761243936,
+          "nanoseconds": 701000000
+        },
+        "location": "3aeddf6f-a433-45c5-af37-c58da7b7b137",
+        "id": "3Xh8BdpeID7Bcrj2KxWV",
+        "classified": true,
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761243886,
+          "nanoseconds": 649000000
+        },
+        "clientId": "6162c5b9-9e84-4bdf-9045-f82c8b50b86b",
+        "collections": [
+          {
+            "count": 36,
+            "materialId": "plasticos",
+            "weight": 216
+          }
+        ],
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761244026,
+          "nanoseconds": 664000000
+        }
+      }
+    },
+    {
+      "id": "5AKTB9dipF3v1EZNCcIk",
+      "data": {
+        "classified": true,
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1757690100,
+          "nanoseconds": 0
+        },
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1757690100,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1757690100,
+          "nanoseconds": 0
+        },
+        "id": "5AKTB9dipF3v1EZNCcIk",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "collections": [
+          {
+            "materialId": "plasticos",
+            "weight": 39.4,
+            "count": 26
+          },
+          {
+            "weight": 61.2,
+            "materialId": "organico",
+            "count": 20
+          },
+          {
+            "weight": 50.8,
+            "materialId": "papel_carton",
+            "count": 14
+          }
+        ]
+      }
+    },
+    {
+      "id": "5QiEV9fQRycQoL8CBPOh",
+      "data": {
+        "collections": [
+          {
+            "materialId": "papel_carton",
+            "count": 5,
+            "weight": 25
+          },
+          {
+            "count": 10,
+            "weight": 54,
+            "materialId": "organico"
+          }
+        ],
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761797937,
+          "nanoseconds": 15000000
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761797937,
+          "nanoseconds": 15000000
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "classified": false,
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761797905,
+          "nanoseconds": 620000000
+        },
+        "id": "5QiEV9fQRycQoL8CBPOh"
+      }
+    },
+    {
+      "id": "ANzNAnlvDEmfJdhNRTp0",
+      "data": {
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1747596600,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "weight": 63.4,
+            "count": 18,
+            "materialId": "papel_carton"
+          },
+          {
+            "materialId": "otros",
+            "weight": 18.7,
+            "count": 6
+          },
+          {
+            "weight": 9.8,
+            "count": 4,
+            "materialId": "descarte"
+          }
+        ],
+        "id": "ANzNAnlvDEmfJdhNRTp0",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1747596600,
+          "nanoseconds": 0
+        },
+        "classified": false,
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1747596600,
+          "nanoseconds": 0
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad"
+      }
+    },
+    {
+      "id": "B0r5s2bxyZeHXG377O7X",
+      "data": {
+        "collections": [
+          {
+            "count": 18,
+            "materialId": "plasticos",
+            "weight": 52
+          },
+          {
+            "count": 12,
+            "weight": 70.5,
+            "materialId": "papel_carton"
+          },
+          {
+            "materialId": "organico",
+            "weight": 135.5,
+            "count": 10
+          },
+          {
+            "weight": 22,
+            "materialId": "descarte",
+            "count": 3
+          }
+        ],
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1731398400,
+          "nanoseconds": 0
+        },
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1731398400,
+          "nanoseconds": 0
+        },
+        "location": "mock-location-49yiwg",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1731398400,
+          "nanoseconds": 0
+        },
+        "classified": false
+      }
+    },
+    {
+      "id": "B3KYO8zgmO3FW5Lioh3s",
+      "data": {
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1735027200,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1735027200,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "materialId": "plasticos",
+            "weight": 50,
+            "count": 17
+          },
+          {
+            "weight": 68,
+            "materialId": "papel_carton",
+            "count": 12
+          },
+          {
+            "weight": 130,
+            "count": 10,
+            "materialId": "organico"
+          },
+          {
+            "materialId": "descarte",
+            "count": 4,
+            "weight": 23.5
+          }
+        ],
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1735027200,
+          "nanoseconds": 0
+        },
+        "classified": false,
+        "location": "mock-location-s09ksn"
+      }
+    },
+    {
+      "id": "EFcJENNlvEkFDPHlXiO9",
+      "data": {
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227753,
+          "nanoseconds": 552000000
+        },
+        "location": "efc14a40-9229-4973-9829-967464486d24",
+        "clientId": "a71be043-6d28-4404-a681-9ab044166f9e",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227753,
+          "nanoseconds": 552000000
+        },
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761228070,
+          "nanoseconds": 993000000
+        },
+        "id": "EFcJENNlvEkFDPHlXiO9",
+        "classified": false,
+        "collections": [
+          {
+            "weight": 15,
+            "count": 12,
+            "materialId": "mezclado"
+          }
+        ]
+      }
+    },
+    {
+      "id": "FwJcQhb8xeRrRjDJp5hO",
+      "data": {
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1740511200,
+          "nanoseconds": 0
+        },
+        "id": "FwJcQhb8xeRrRjDJp5hO",
+        "collections": [
+          {
+            "weight": 48.7,
+            "materialId": "papel_carton",
+            "count": 14
+          },
+          {
+            "count": 11,
+            "weight": 19.3,
+            "materialId": "plasticos"
+          }
+        ],
+        "classified": false,
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1740511200,
+          "nanoseconds": 0
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1740511200,
+          "nanoseconds": 0
+        }
+      }
+    },
+    {
+      "id": "H0aiVYKgYYgeIky1E99l",
+      "data": {
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "classified": false,
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1745880300,
+          "nanoseconds": 0
+        },
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1745880300,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1745880300,
+          "nanoseconds": 0
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "id": "H0aiVYKgYYgeIky1E99l",
+        "collections": [
+          {
+            "count": 13,
+            "materialId": "organico",
+            "weight": 41.2
+          },
+          {
+            "weight": 38.9,
+            "count": 11,
+            "materialId": "papel_carton"
+          },
+          {
+            "count": 9,
+            "weight": 140.5,
+            "materialId": "plasticos"
+          }
+        ]
+      }
+    },
+    {
+      "id": "H4buRintPaLnksJByjcb",
+      "data": {
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1755709200,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "weight": 45.9,
+            "count": 15,
+            "materialId": "organico"
+          },
+          {
+            "count": 13,
+            "weight": 19.8,
+            "materialId": "plasticos"
+          },
+          {
+            "weight": 32.7,
+            "materialId": "papel_carton",
+            "count": 9
+          }
+        ],
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1755709200,
+          "nanoseconds": 0
+        },
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1755709200,
+          "nanoseconds": 0
+        },
+        "id": "H4buRintPaLnksJByjcb",
+        "classified": false
+      }
+    },
+    {
+      "id": "HQuDVsTL0ni5UVdzk6vj",
+      "data": {
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1736965800,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1736965800,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "count": 12,
+            "materialId": "papel_carton",
+            "weight": 45.3
+          },
+          {
+            "count": 15,
+            "materialId": "plasticos",
+            "weight": 22.5
+          },
+          {
+            "materialId": "organico",
+            "count": 8,
+            "weight": 28.7
+          }
+        ],
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "id": "HQuDVsTL0ni5UVdzk6vj",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1736965800,
+          "nanoseconds": 0
+        },
+        "classified": true
+      }
+    },
+    {
+      "id": "HsgT7TqwWfS5bmtofmsL",
+      "data": {
+        "classified": false,
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1734422400,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1734422400,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "weight": 70,
+            "count": 25,
+            "materialId": "plasticos"
+          },
+          {
+            "count": 18,
+            "weight": 95,
+            "materialId": "papel_carton"
+          },
+          {
+            "materialId": "organico",
+            "count": 14,
+            "weight": 165.5
+          },
+          {
+            "materialId": "otros",
+            "weight": 25,
+            "count": 8
+          },
+          {
+            "materialId": "descarte",
+            "weight": 30,
+            "count": 6
+          }
+        ],
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1734422400,
+          "nanoseconds": 0
+        },
+        "location": "mock-location-jgsfox"
+      }
+    },
+    {
+      "id": "LdoFIKSPBYKteYpD62uL",
+      "data": {
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "collections": [
+          {
+            "materialId": "plasticos",
+            "weight": 24.8,
+            "count": 18
+          },
+          {
+            "count": 6,
+            "materialId": "papel_carton",
+            "weight": 28.5
+          },
+          {
+            "materialId": "organico",
+            "count": 10,
+            "weight": 38.2
+          }
+        ],
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "id": "LdoFIKSPBYKteYpD62uL",
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "classified": false
+      }
+    },
+    {
+      "id": "PcdUcEg9ncwskoUElWS0",
+      "data": {
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1742490900,
+          "nanoseconds": 0
+        },
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1742490900,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "materialId": "plasticos",
+            "count": 19,
+            "weight": 27.6
+          },
+          {
+            "materialId": "papel_carton",
+            "weight": 29.8,
+            "count": 8
+          },
+          {
+            "weight": 15.3,
+            "count": 5,
+            "materialId": "otros"
+          }
+        ],
+        "classified": false,
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "id": "PcdUcEg9ncwskoUElWS0",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1742490900,
+          "nanoseconds": 0
+        }
+      }
+    },
+    {
+      "id": "PvHQjoBpKgYgGXi2K7IE",
+      "data": {
+        "location": "efc14a40-9229-4973-9829-967464486d24",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227647,
+          "nanoseconds": 736000000
+        },
+        "clientId": "a71be043-6d28-4404-a681-9ab044166f9e",
+        "classified": false,
+        "collections": [
+          {
+            "count": 2,
+            "weight": 5,
+            "materialId": "papel_carton"
+          }
+        ],
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227980,
+          "nanoseconds": 603000000
+        },
+        "id": "PvHQjoBpKgYgGXi2K7IE",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227647,
+          "nanoseconds": 736000000
+        }
+      }
+    },
+    {
+      "id": "TCoHq6Zt020uSaZ4eSF1",
+      "data": {
+        "id": "TCoHq6Zt020uSaZ4eSF1",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1750626000,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1750626000,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1750626000,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "weight": 36.5,
+            "count": 10,
+            "materialId": "papel_carton"
+          },
+          {
+            "materialId": "plasticos",
+            "count": 22,
+            "weight": 33.7
+          }
+        ],
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "classified": false
+      }
+    },
+    {
+      "id": "Ti1IZEC7c906mavGaGHn",
+      "data": {
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1752171300,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "collections": [
+          {
+            "count": 21,
+            "weight": 31.9,
+            "materialId": "plasticos"
+          },
+          {
+            "count": 17,
+            "materialId": "papel_carton",
+            "weight": 61.3
+          },
+          {
+            "count": 11,
+            "materialId": "organico",
+            "weight": 34.6
+          }
+        ],
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1752171300,
+          "nanoseconds": 0
+        },
+        "classified": true,
+        "id": "Ti1IZEC7c906mavGaGHn",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1752171300,
+          "nanoseconds": 0
+        }
+      }
+    },
+    {
+      "id": "X1WF6fD2MnVSN1Iv4nWg",
+      "data": {
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "classified": true,
+        "collections": [
+          {
+            "weight": 45.8,
+            "count": 15,
+            "materialId": "organico"
+          },
+          {
+            "materialId": "papel_carton",
+            "weight": 22,
+            "count": 5
+          }
+        ],
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "id": "X1WF6fD2MnVSN1Iv4nWg"
+      }
+    },
+    {
+      "id": "YNsgFKbbnxOFYsHxYg75",
+      "data": {
+        "collections": [
+          {
+            "materialId": "plasticos",
+            "count": 15,
+            "weight": 45.5
+          },
+          {
+            "count": 10,
+            "materialId": "papel_carton",
+            "weight": 62.3
+          },
+          {
+            "count": 8,
+            "weight": 120,
+            "materialId": "organico"
+          },
+          {
+            "weight": 15.2,
+            "materialId": "otros",
+            "count": 5
+          }
+        ],
+        "location": "mock-location-6yzrgo",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1730793600,
+          "nanoseconds": 0
+        },
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1730793600,
+          "nanoseconds": 0
+        },
+        "classified": false,
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1730793600,
+          "nanoseconds": 0
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28"
+      }
+    },
+    {
+      "id": "Yw1YLbmXjpudVYOC7XYw",
+      "data": {
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1733817600,
+          "nanoseconds": 0
+        },
+        "classified": false,
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "location": "mock-location-vlqph4",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1733817600,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "count": 19,
+            "weight": 55.5,
+            "materialId": "plasticos"
+          },
+          {
+            "materialId": "papel_carton",
+            "count": 13,
+            "weight": 75
+          },
+          {
+            "materialId": "organico",
+            "weight": 140,
+            "count": 11
+          },
+          {
+            "count": 5,
+            "weight": 28.5,
+            "materialId": "descarte"
+          }
+        ],
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1733817600,
+          "nanoseconds": 0
+        }
+      }
+    },
+    {
+      "id": "c6encpwLjmo4x75QJHWY",
+      "data": {
+        "id": "c6encpwLjmo4x75QJHWY",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1749318300,
+          "nanoseconds": 0
+        },
+        "classified": true,
+        "collections": [
+          {
+            "count": 24,
+            "weight": 71.5,
+            "materialId": "organico"
+          },
+          {
+            "weight": 52.8,
+            "materialId": "papel_carton",
+            "count": 15
+          },
+          {
+            "count": 14,
+            "materialId": "plasticos",
+            "weight": 21.4
+          }
+        ],
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1749318300,
+          "nanoseconds": 0
+        },
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1749318300,
+          "nanoseconds": 0
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28"
+      }
+    },
+    {
+      "id": "d6j3nGLCDaLHPfoQsTIj",
+      "data": {
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "classified": false,
+        "collections": [
+          {
+            "count": 20,
+            "materialId": "plasticos",
+            "weight": 28.5
+          },
+          {
+            "weight": 8.5,
+            "materialId": "otros",
+            "count": 3
+          },
+          {
+            "count": 2,
+            "weight": 5,
+            "materialId": "descarte"
+          }
+        ],
+        "id": "d6j3nGLCDaLHPfoQsTIj",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        }
+      }
+    },
+    {
+      "id": "g1zE1lcmNpU2ONQkW5mZ",
+      "data": {
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227587,
+          "nanoseconds": 823000000
+        },
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227662,
+          "nanoseconds": 572000000
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227462,
+          "nanoseconds": 746000000
+        },
+        "classified": true,
+        "collections": [
+          {
+            "materialId": "plasticos",
+            "weight": 1,
+            "count": 2
+          }
+        ],
+        "location": "efc14a40-9229-4973-9829-967464486d24",
+        "id": "g1zE1lcmNpU2ONQkW5mZ",
+        "clientId": "a71be043-6d28-4404-a681-9ab044166f9e"
+      }
+    },
+    {
+      "id": "gDypQ9fb2X8DzSWDYPpc",
+      "data": {
+        "classified": true,
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1760553900,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "id": "gDypQ9fb2X8DzSWDYPpc",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1760553900,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "materialId": "organico",
+            "count": 17,
+            "weight": 52.3
+          },
+          {
+            "weight": 75.4,
+            "count": 21,
+            "materialId": "papel_carton"
+          },
+          {
+            "materialId": "plasticos",
+            "weight": 18.6,
+            "count": 12
+          }
+        ],
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1760553900,
+          "nanoseconds": 0
+        }
+      }
+    },
+    {
+      "id": "iJsBapVn8ZNUXOp7eRqx",
+      "data": {
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1753461000,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1753461000,
+          "nanoseconds": 0
+        },
+        "classified": false,
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1753461000,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "weight": 57.8,
+            "materialId": "organico",
+            "count": 19
+          },
+          {
+            "materialId": "papel_carton",
+            "count": 12,
+            "weight": 43.2
+          },
+          {
+            "weight": 21.4,
+            "count": 7,
+            "materialId": "otros"
+          }
+        ],
+        "id": "iJsBapVn8ZNUXOp7eRqx"
+      }
+    },
+    {
+      "id": "k3SRV5HzBh8sqeYQjCOa",
+      "data": {
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1739209500,
+          "nanoseconds": 0
+        },
+        "id": "k3SRV5HzBh8sqeYQjCOa",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1739209500,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "classified": true,
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1739209500,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "weight": 38.9,
+            "count": 25,
+            "materialId": "plasticos"
+          },
+          {
+            "weight": 52.4,
+            "count": 18,
+            "materialId": "organico"
+          },
+          {
+            "count": 9,
+            "weight": 35.6,
+            "materialId": "papel_carton"
+          }
+        ],
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28"
+      }
+    },
+    {
+      "id": "lUuxdklGax6IC0T3HG2W",
+      "data": {
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761753600,
+          "nanoseconds": 0
+        },
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761753600,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "classified": false,
+        "id": "lUuxdklGax6IC0T3HG2W",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761753600,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "materialId": "plasticos",
+            "weight": 36.2,
+            "count": 24
+          },
+          {
+            "weight": 57.1,
+            "count": 16,
+            "materialId": "papel_carton"
+          },
+          {
+            "count": 14,
+            "materialId": "organico",
+            "weight": 42.8
+          }
+        ],
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28"
+      }
+    },
+    {
+      "id": "nJqtFBDbxy24FbA0Hq4z",
+      "data": {
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1733212800,
+          "nanoseconds": 0
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1733212800,
+          "nanoseconds": 0
+        },
+        "classified": false,
+        "location": "mock-location-b1hm28",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1733212800,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "count": 22,
+            "weight": 65,
+            "materialId": "plasticos"
+          },
+          {
+            "count": 15,
+            "materialId": "papel_carton",
+            "weight": 85.5
+          },
+          {
+            "count": 13,
+            "materialId": "organico",
+            "weight": 155
+          },
+          {
+            "count": 7,
+            "materialId": "otros",
+            "weight": 22
+          }
+        ]
+      }
+    },
+    {
+      "id": "oIoaizZCoJIPdHOZ3nv3",
+      "data": {
+        "id": "oIoaizZCoJIPdHOZ3nv3",
+        "classified": false,
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1737584100,
+          "nanoseconds": 0
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1737584100,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1737584100,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "collections": [
+          {
+            "weight": 31.2,
+            "count": 7,
+            "materialId": "papel_carton"
+          },
+          {
+            "count": 4,
+            "weight": 12.5,
+            "materialId": "otros"
+          }
+        ]
+      }
+    },
+    {
+      "id": "p286Oo7uH45LQEhci2aK",
+      "data": {
+        "classified": true,
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "id": "p286Oo7uH45LQEhci2aK",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1744471800,
+          "nanoseconds": 0
+        },
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1744471800,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1744471800,
+          "nanoseconds": 0
+        },
+        "collections": [
+          {
+            "materialId": "papel_carton",
+            "weight": 72.5,
+            "count": 20
+          },
+          {
+            "weight": 25.8,
+            "materialId": "plasticos",
+            "count": 17
+          }
+        ]
+      }
+    },
+    {
+      "id": "r8WxnSudHvGQjHnvqPhN",
+      "data": {
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1759098600,
+          "nanoseconds": 0
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1759098600,
+          "nanoseconds": 0
+        },
+        "id": "r8WxnSudHvGQjHnvqPhN",
+        "collections": [
+          {
+            "materialId": "papel_carton",
+            "weight": 68.9,
+            "count": 19
+          },
+          {
+            "materialId": "otros",
+            "count": 8,
+            "weight": 24.5
+          }
+        ],
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1759098600,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "classified": false
+      }
+    },
+    {
+      "id": "sPd9wANfYUVMFz0RDskF",
+      "data": {
+        "collections": [
+          {
+            "materialId": "papel_carton",
+            "count": 10,
+            "weight": 42
+          },
+          {
+            "weight": 30.5,
+            "materialId": "organico",
+            "count": 8
+          }
+        ],
+        "id": "sPd9wANfYUVMFz0RDskF",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "classified": true,
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        }
+      }
+    },
+    {
+      "id": "tqLiXefFGKzCyWaMwdbY",
+      "data": {
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "collections": [
+          {
+            "materialId": "papel_carton",
+            "weight": 35.5,
+            "count": 8
+          },
+          {
+            "count": 12,
+            "materialId": "plasticos",
+            "weight": 18.2
+          }
+        ],
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad",
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "classified": false,
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761801441,
+          "nanoseconds": 775000000
+        },
+        "id": "tqLiXefFGKzCyWaMwdbY"
+      }
+    },
+    {
+      "id": "uzUYard1S95gjbZQxmWo",
+      "data": {
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "id": "uzUYard1S95gjbZQxmWo",
+        "classified": true,
+        "collections": [
+          {
+            "materialId": "papel_carton",
+            "weight": 82.6,
+            "count": 23
+          },
+          {
+            "materialId": "plasticos",
+            "count": 16,
+            "weight": 24.3
+          },
+          {
+            "materialId": "descarte",
+            "weight": 5.1,
+            "count": 2
+          }
+        ],
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1754685900,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1754685900,
+          "nanoseconds": 0
+        },
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1754685900,
+          "nanoseconds": 0
+        },
+        "location": "05f334d4-9747-431d-abcd-7d17956013ad"
+      }
+    },
+    {
+      "id": "xGmHjcvefa2VEG0DRtQ0",
+      "data": {
+        "classified": false,
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1732089600,
+          "nanoseconds": 0
+        },
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1732089600,
+          "nanoseconds": 0
+        },
+        "location": "mock-location-qdofkf",
+        "collections": [
+          {
+            "weight": 58.3,
+            "count": 20,
+            "materialId": "plasticos"
+          },
+          {
+            "materialId": "papel_carton",
+            "weight": 80,
+            "count": 14
+          },
+          {
+            "materialId": "organico",
+            "count": 12,
+            "weight": 145
+          },
+          {
+            "count": 6,
+            "materialId": "otros",
+            "weight": 18.5
+          },
+          {
+            "materialId": "descarte",
+            "weight": 25.5,
+            "count": 4
+          }
+        ],
+        "clientId": "3e0040d7-2497-4327-90aa-aec7a09b1f28",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1732089600,
+          "nanoseconds": 0
+        }
+      }
+    }
+  ],
+  "classifications": [
+    {
+      "id": "EwbwVMUsTRKmUlAJlbWR",
+      "data": {
+        "id": "EwbwVMUsTRKmUlAJlbWR",
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761243988,
+          "nanoseconds": 223000000
+        },
+        "collectionId": "3Xh8BdpeID7Bcrj2KxWV",
+        "clientId": "6162c5b9-9e84-4bdf-9045-f82c8b50b86b",
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761244026,
+          "nanoseconds": 664000000
+        },
+        "classifications": [
+          {
+            "weight": 180,
+            "subMaterialId": "pet_natural",
+            "materialId": "plasticos"
+          },
+          {
+            "weight": 36,
+            "materialId": "plasticos",
+            "subMaterialId": "nylon_transparente"
+          }
+        ],
+        "location": "3aeddf6f-a433-45c5-af37-c58da7b7b137",
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761243937,
+          "nanoseconds": 532000000
+        }
+      }
+    },
+    {
+      "id": "lsr91WPnjHZuKIwjjEEy",
+      "data": {
+        "createdAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227587,
+          "nanoseconds": 823000000
+        },
+        "timeStamp": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227895,
+          "nanoseconds": 202000000
+        },
+        "classifications": [
+          {
+            "materialId": "papel_carton",
+            "weight": 2,
+            "subMaterialId": "papel_blanco"
+          }
+        ],
+        "updatedAt": {
+          "type": "firestore/timestamp/1.0",
+          "seconds": 1761227587,
+          "nanoseconds": 823000000
+        },
+        "id": "lsr91WPnjHZuKIwjjEEy",
+        "collectionId": "g1zE1lcmNpU2ONQkW5mZ",
+        "location": "efc14a40-9229-4973-9829-967464486d24",
+        "clientId": "a71be043-6d28-4404-a681-9ab044166f9e"
+      }
+    }
+  ]
+}

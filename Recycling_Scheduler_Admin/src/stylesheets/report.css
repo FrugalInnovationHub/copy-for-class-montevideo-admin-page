@@ -1,0 +1,37 @@
+.report-popup{
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 32px;
+  border: 8px solid #a0c49a;
+  background-color: #0038a8;
+  width: 562px;
+  flex-direction: column;
+  padding: 38px 0;
+  margin: 1rem;
+}
+
+.report-popup > button{
+  color: #fff;
+  white-space: nowrap;
+  border-radius: 50px;
+  background-color: #a0c49a;
+  justify-content: center;
+  padding: 18px 36px;
+  font: 700 20px Inter, sans-serif;
+}
+
+.report-popup > h1{
+  color: #fff;
+}
+
+.download-btn {
+  color: #fff;
+  white-space: nowrap;
+  border-radius: 50px;
+  background-color: #a0c49a;
+  justify-content: center;
+  padding: 18px 36px;
+  font: 700 20px Inter, sans-serif;
+}

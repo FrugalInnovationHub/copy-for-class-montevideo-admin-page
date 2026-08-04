@@ -1,0 +1,77 @@
+table.clients-table, table.users-table{
+  overflow-y: auto;
+  height: 75vh;
+  max-width: 70vw;
+  display: inline-block;
+}
+
+table > thead {
+  width: 80vw;  
+  height: 6rem;
+  position: sticky;
+  top: 0rem;
+  font: 700 20px Inter, sans-serif;
+}
+
+table > thead > tr {
+  border-radius: 32px;
+  padding: 20px 40px;
+  background-color: #a0c49a;
+}
+
+table.users-table > thead > tr > th, table.clients-table > thead > tr > th{
+  color: #FFFFFF;
+  padding: 1rem 2rem;
+}
+
+table > thead > tr > th{
+  color: #FFFFFF;
+}
+
+
+table > tbody {
+  width: 50vw; 
+  font: 400 20px Inter, sans-serif;
+  max-height: 70vh;
+  overflow-y: auto;
+  
+}
+
+table > tbody > tr {
+  border-radius: 32px;
+  padding: 10px 20px;
+  height: 2rem;
+
+}
+
+
+td {
+  text-align: center;
+  padding: 1rem;
+}
+
+tbody > tr:nth-child(2n+1){
+  background-color: #FFF8DB;
+}
+
+tbody > tr:nth-child(2n){
+  background-color: #FFFFFF;
+}
+
+table, th, td{
+  border: 0px solid transparent;
+}
+
+
+.users-table > tbody > tr > td, .user-name {
+  padding: 1rem 5rem !important;
+  text-align: left;
+}
+
+
+
+
+
+
+
+
