@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import NavigationWrapper from '../components/Navigation/NavigationWrapper';
 import evidenceService from '../services/evidenceService';
 import { getClients } from '../api/calls';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const toLocalDateTimeInput = (date = new Date()) => {
     const offset = date.getTimezoneOffset() * 60_000;
@@ -9,6 +10,8 @@ const toLocalDateTimeInput = (date = new Date()) => {
 };
 
 const EvidencePage = () => {
+    const { language, t } = useLanguage();
+    const locale = language === 'en' ? 'en-US' : 'es-UY';
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -86,7 +89,7 @@ const EvidencePage = () => {
             }
         } catch (error) {
             console.error(error);
-            alert("Failed to load entries");
+            alert(t("Failed to load entries"));
         } finally {
             setLoading(false);
         }
@@ -99,23 +102,23 @@ const EvidencePage = () => {
 
     const handleUpload = async () => {
         if (!selectedClient || !selectedLocation) {
-            alert("Please select a Client and Location first.");
+            alert(t("Please select a Client and Location first."));
             return;
         }
 
         if (selectedFiles.length === 0) {
-            alert("Please select at least one image.");
+            alert(t("Please select at least one image."));
             return;
         }
 
         const uploadDate = new Date(selectedDate);
         const now = new Date();
         if (Number.isNaN(uploadDate.getTime())) {
-            alert("Please select a valid date and time.");
+            alert(t("Please select a valid date and time."));
             return;
         }
         if (uploadDate > now) {
-            alert("Cannot upload evidence with a future date and time.");
+            alert(t("Cannot upload evidence with a future date and time."));
             return;
         }
 
@@ -130,7 +133,7 @@ const EvidencePage = () => {
                 },
                 new Date(selectedDate)
             );
-            alert("Upload successful!");
+            alert(t("Upload successful!"));
 
             // Reset form
             setSelectedFiles([]);
@@ -144,7 +147,7 @@ const EvidencePage = () => {
             fetchEntries(null);
         } catch (error) {
             console.error(error);
-            alert("Upload failed");
+            alert(t("Upload failed"));
         } finally {
             setUploading(false);
         }
@@ -194,13 +197,12 @@ const EvidencePage = () => {
     // Helper to format "YYYY-MM" to "Month, Year" (e.g. "Mayo, 2026")
     const formatHeaderMonth = (monthStr) => {
         if (!monthStr || !monthStr.includes('-')) return monthStr;
-        const [year, month] = monthStr.split('-');
-        const monthNames = [
-            "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-        ];
-        const monthName = monthNames[parseInt(month) - 1] || month;
-        return `${monthName}, ${year}`;
+        const [year, month] = monthStr.split('-').map(Number);
+        const formatted = new Intl.DateTimeFormat(locale, {
+            month: 'long',
+            year: 'numeric',
+        }).format(new Date(year, month - 1, 1));
+        return formatted.charAt(0).toUpperCase() + formatted.slice(1);
     };
 
     // Helper to get images array from entry (supports both old and new schema)
@@ -231,7 +233,7 @@ const EvidencePage = () => {
                 <div className="flex flex-col w-11/12 md:w-5/6">
                     {/* Header */}
                     <div className="mb-6 text-center md:text-left">
-                        <h1 className="text-3xl md:text-5xl text-black/70 font-bold">Evidencia</h1>
+                        <h1 className="text-3xl md:text-5xl text-black/70 font-bold">{t('Evidencia')}</h1>
                     </div>
 
                     {/* Upload Section */}
@@ -244,7 +246,7 @@ const EvidencePage = () => {
                                     value={selectedClient}
                                     onChange={(e) => setSelectedClient(e.target.value)}
                                 >
-                                    <option value="">Seleccionar Cliente</option>
+                                    <option value="">{t('Seleccionar Cliente')}</option>
                                     {clients.map(c => (
                                         <option key={c.id} value={c.id}>{c.client_name}</option>
                                     ))}
@@ -256,7 +258,7 @@ const EvidencePage = () => {
                                     onChange={(e) => setSelectedLocation(e.target.value)}
                                     disabled={!selectedClient}
                                 >
-                                    <option value="">Seleccionar Ubicación</option>
+                                    <option value="">{t('Seleccionar Ubicación')}</option>
                                     {locations.map(l => (
                                         <option key={l.id} value={l.id}>
                                             {l.name} {l.address ? `(${l.address})` : ''}
@@ -275,7 +277,7 @@ const EvidencePage = () => {
                             {/* Row 2: Notes */}
                             <textarea
                                 className="p-2.5 border border-gray-200 rounded-xl bg-white/90 w-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-gray-700 shadow-sm resize-none"
-                                placeholder="Notas (opcional)"
+                                placeholder={t('Notas (opcional)')}
                                 rows={2}
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
@@ -290,11 +292,24 @@ const EvidencePage = () => {
                                         multiple
                                         accept="image/*"
                                         onChange={handleFileSelect}
-                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-black/10 file:text-gray-700 hover:file:bg-black/20"
+                                        className="sr-only"
                                     />
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        <label
+                                            htmlFor="evidence-file-input"
+                                            className="inline-flex cursor-pointer items-center rounded-full bg-black/10 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-black/20 focus-within:ring-2 focus-within:ring-blue-500"
+                                        >
+                                            {t('Seleccionar imágenes')}
+                                        </label>
+                                        <span className="text-sm text-gray-500">
+                                            {selectedFiles.length === 0
+                                                ? t('Ningún archivo seleccionado')
+                                                : `${selectedFiles.length} ${t(selectedFiles.length === 1 ? 'archivo seleccionado' : 'archivos seleccionados')}`}
+                                        </span>
+                                    </div>
                                     {selectedFiles.length > 0 && (
-                                        <p className="text-sm text-gray-600 mt-2">
-                                            {selectedFiles.length} archivo(s) seleccionado(s)
+                                        <p className="sr-only" aria-live="polite">
+                                            {selectedFiles.length} {t('archivos seleccionados')}
                                         </p>
                                     )}
                                 </div>
@@ -313,14 +328,14 @@ const EvidencePage = () => {
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>
-                                            Subiendo...
+                                            {t('Subiendo...')}
                                         </span>
                                     ) : (
                                         <span className="flex items-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                                             </svg>
-                                            Subir Imágenes
+                                            {t('Subir Imágenes')}
                                         </span>
                                     )}
                                 </button>
@@ -337,7 +352,7 @@ const EvidencePage = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-gray-500">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
                                 </svg>
-                                <span>Filtrar Evidencias</span>
+                                <span>{t('Filtrar Evidencias')}</span>
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-stretch sm:items-center">
@@ -347,7 +362,7 @@ const EvidencePage = () => {
                                     value={filterClient}
                                     onChange={(e) => setFilterClient(e.target.value)}
                                 >
-                                    <option value="">Todos los Clientes</option>
+                                    <option value="">{t('Todos los Clientes')}</option>
                                     {clients.map(c => (
                                         <option key={c.id} value={c.id}>{c.client_name}</option>
                                     ))}
@@ -359,7 +374,7 @@ const EvidencePage = () => {
                                     value={filterMonth}
                                     onChange={(e) => setFilterMonth(e.target.value)}
                                 >
-                                    <option value="">Todos los Meses</option>
+                                    <option value="">{t('Todos los Meses')}</option>
                                     {availableMonths.map(m => (
                                         <option key={m} value={m}>{formatHeaderMonth(m)}</option>
                                     ))}
@@ -377,7 +392,7 @@ const EvidencePage = () => {
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                                         </svg>
-                                        Limpiar
+                                        {t('Limpiar')}
                                     </button>
                                 )}
                             </div>
@@ -385,8 +400,8 @@ const EvidencePage = () => {
 
                         {Object.keys(groupedEntries).length === 0 && !loading && (
                             <div className='text-center text-gray-500 py-20'>
-                                <p className="text-xl">No se encontraron evidencias.</p>
-                                <p className="text-sm mt-2">Prueba cambiando los criterios de búsqueda o sube nuevas imágenes.</p>
+                                <p className="text-xl">{t('No se encontraron evidencias.')}</p>
+                                <p className="text-sm mt-2">{t('Prueba cambiando los criterios de búsqueda o sube nuevas imágenes.')}</p>
                             </div>
                         )}
 
@@ -435,7 +450,7 @@ const EvidencePage = () => {
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                                                                 </svg>
-                                                                {entry.dateTime ? entry.dateTime.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : 'Sin fecha'} - {entry.dateTime ? entry.dateTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : ''}
+                                                                {entry.dateTime ? entry.dateTime.toLocaleDateString(locale, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : t('Sin fecha')} - {entry.dateTime ? entry.dateTime.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : ''}
                                                             </span>
                                                         </div>
 
@@ -455,7 +470,7 @@ const EvidencePage = () => {
                                                             </p>
                                                         ) : (
                                                             <p className="text-xs sm:text-sm text-gray-400 italic mt-1 sm:mt-1.5 pl-5 border-l-2 border-gray-100">
-                                                                Sin notas adicionales
+                                                                {t('Sin notas adicionales')}
                                                             </p>
                                                         )}
                                                     </div>
@@ -463,7 +478,7 @@ const EvidencePage = () => {
                                                     {/* Card Footer */}
                                                     <div className="flex items-center justify-end mt-3 pt-2 border-t border-gray-100/50">
                                                         <span className="text-xs font-semibold text-blue-600 flex items-center gap-1 group-hover:text-blue-700 transition-colors">
-                                                            Ver detalles
+                                                            {t('Ver detalles')}
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                                             </svg>
@@ -492,7 +507,7 @@ const EvidencePage = () => {
                                     onClick={() => fetchEntries()}
                                     className="px-6 py-2 bg-white/50 hover:bg-white/80 rounded-full text-gray-700 font-medium transition-colors shadow-sm"
                                 >
-                                    Cargar Más
+                                    {t('Cargar Más')}
                                 </button>
                             </div>
                         )}
@@ -542,7 +557,7 @@ const EvidencePage = () => {
                         {/* Details Panel */}
                         <div className="w-full md:w-96 p-8 flex flex-col border-l border-gray-100 bg-white">
                             <div className="flex justify-between items-start mb-8">
-                                <h2 className="text-2xl font-bold text-gray-800">Detalles</h2>
+                                <h2 className="text-2xl font-bold text-gray-800">{t('Detalles')}</h2>
                                 <button onClick={closeModal} className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-black transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -552,33 +567,33 @@ const EvidencePage = () => {
 
                             <div className="space-y-6 flex-1 overflow-y-auto">
                                 <div className="border-b border-gray-100 pb-4">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Fecha</label>
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('Fecha')}</label>
                                     <p className="text-gray-900 text-lg mt-1">
-                                        {selectedEntry.dateTime?.toLocaleString() || 'N/A'}
+                                        {selectedEntry.dateTime?.toLocaleString(locale) || 'N/A'}
                                     </p>
                                 </div>
                                 <div className="border-b border-gray-100 pb-4">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Cliente</label>
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('Cliente')}</label>
                                     <p className="text-gray-900 font-medium text-lg mt-1">
                                         {getClientName(selectedEntry.clientId)}
                                     </p>
                                 </div>
                                 <div className="border-b border-gray-100 pb-4">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Ubicación</label>
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('Ubicación')}</label>
                                     <p className="text-gray-900 text-lg mt-1">
                                         {getLocationName(selectedEntry.clientId, selectedEntry.locationId)}
                                     </p>
                                 </div>
                                 {selectedEntry.notes && (
                                     <div className="border-b border-gray-100 pb-4">
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Notas</label>
+                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('Notas')}</label>
                                         <p className="text-gray-900 text-lg mt-1">{selectedEntry.notes}</p>
                                     </div>
                                 )}
                                 <div className="border-b border-gray-100 pb-4">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Imágenes</label>
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('Imágenes')}</label>
                                     <p className="text-gray-900 text-lg mt-1">
-                                        {getEntryImages(selectedEntry).length} archivo(s)
+                                        {getEntryImages(selectedEntry).length} {t('archivo(s)')}
                                     </p>
                                 </div>
                             </div>
@@ -590,7 +605,7 @@ const EvidencePage = () => {
                                     rel="noopener noreferrer"
                                     className="block w-full py-3 px-4 bg-black text-white hover:bg-gray-800 text-center rounded-xl font-medium transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                                 >
-                                    Abrir Original
+                                    {t('Abrir Original')}
                                 </a>
                             </div>
                         </div>

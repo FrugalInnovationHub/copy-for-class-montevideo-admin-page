@@ -11,6 +11,7 @@ Administrative dashboard for the Montevideo recycling scheduler. It manages clie
 - Generate client classification reports and CSV exports
 - View statistical reports and export them as PDF
 - Responsive desktop and mobile navigation
+- Persistent Spanish/English interface switching across every active page
 
 ## Technology
 

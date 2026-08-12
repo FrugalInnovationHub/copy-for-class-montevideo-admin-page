@@ -8,6 +8,7 @@ import UsersPage from "./pages/UsersPage";
 import ClientsPage from "./pages/ClientsPage";
 import StatisticReports from "./pages/StatisticReports";
 import EvidencePage from "./pages/EvidencePage";
+import { LanguageProvider } from "./i18n/LanguageContext";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <LanguageProvider>
+      <RouterProvider router={router} />
+    </LanguageProvider>
   </React.StrictMode>
 );
