@@ -17,15 +17,21 @@ const collectionName = "evidences";
  */
 const uploadEvidence = async (files, { clientId, locationId, notes = "" }, customDate = null) => {
     try {
+        if (!clientId || !locationId) throw new Error("clientId and locationId are required");
+        if (!files?.length) throw new Error("At least one image is required");
+
         const now = new Date();
         const dateTime = customDate ? new Date(customDate) : now;
+        if (Number.isNaN(dateTime.getTime())) throw new Error("A valid evidence date is required");
         const timestamp = dateTime.getTime();
 
         // 1. Upload all files to Storage
         const imageUrls = [];
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            const filename = `${timestamp}_${i}.${file.name.split('.').pop()}`;
+            if (!file.type?.startsWith("image/")) throw new Error(`${file.name} is not an image`);
+            const extension = file.name.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+            const filename = `${timestamp}_${crypto.randomUUID()}_${i}.${extension}`;
             const storagePath = `evidences/${filename}`;
             const storageRef = ref(storage, storagePath);
 

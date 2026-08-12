@@ -3,18 +3,24 @@ import NavigationWrapper from '../components/Navigation/NavigationWrapper';
 import evidenceService from '../services/evidenceService';
 import { getClients } from '../api/calls';
 
+const toLocalDateTimeInput = (date = new Date()) => {
+    const offset = date.getTimezoneOffset() * 60_000;
+    return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+};
+
 const EvidencePage = () => {
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [lastDoc, setLastDoc] = useState(null);
+    const [hasMore, setHasMore] = useState(true);
 
     // Form states
     const [clients, setClients] = useState([]);
     const [selectedClient, setSelectedClient] = useState('');
     const [selectedLocation, setSelectedLocation] = useState('');
     const [locations, setLocations] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 16));
+    const [selectedDate, setSelectedDate] = useState(() => toLocalDateTimeInput());
     const [notes, setNotes] = useState('');
     const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -28,8 +34,11 @@ const EvidencePage = () => {
 
     useEffect(() => {
         const init = async () => {
-            await getClients(setClients);
-            fetchEntries(null);
+            try {
+                await Promise.all([getClients(setClients), fetchEntries(null)]);
+            } catch (error) {
+                console.error('Failed to initialize evidence page:', error);
+            }
         };
         init();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,11 +57,13 @@ const EvidencePage = () => {
     }, [selectedClient, clients]);
 
     const fetchEntries = async (cursor = undefined) => {
+        if (loading) return;
         const queryCursor = cursor !== undefined ? cursor : lastDoc;
 
         setLoading(true);
         try {
             const data = await evidenceService.getEvidence(queryCursor);
+            setHasMore(data.length === 25);
 
             if (queryCursor === null) {
                 setEntries(data);
@@ -69,6 +80,8 @@ const EvidencePage = () => {
                         return [...prev, ...newEntries];
                     });
                     setLastDoc(data[data.length - 1].doc);
+                } else {
+                    setHasMore(false);
                 }
             }
         } catch (error) {
@@ -97,6 +110,10 @@ const EvidencePage = () => {
 
         const uploadDate = new Date(selectedDate);
         const now = new Date();
+        if (Number.isNaN(uploadDate.getTime())) {
+            alert("Please select a valid date and time.");
+            return;
+        }
         if (uploadDate > now) {
             alert("Cannot upload evidence with a future date and time.");
             return;
@@ -118,6 +135,7 @@ const EvidencePage = () => {
             // Reset form
             setSelectedFiles([]);
             setNotes('');
+            setSelectedDate(toLocalDateTimeInput());
             // Reset file input
             const fileInput = document.getElementById('evidence-file-input');
             if (fileInput) fileInput.value = '';
@@ -468,7 +486,7 @@ const EvidencePage = () => {
                             </div>
                         )}
 
-                        {!loading && entries.length > 0 && (
+                        {!loading && entries.length > 0 && hasMore && (
                             <div className="text-center mt-8">
                                 <button
                                     onClick={() => fetchEntries()}
