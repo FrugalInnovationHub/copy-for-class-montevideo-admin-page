@@ -12,6 +12,7 @@ Administrative dashboard for the Montevideo recycling scheduler. It manages clie
 - View statistical reports and export them as PDF
 - Responsive desktop and mobile navigation
 - Persistent Spanish/English interface switching across every active page
+- Manage materials and optional sub-materials with active, paused, and archived states
 
 ## Technology
 
@@ -91,7 +92,7 @@ npm run build
 | `/clients` | Client and location management |
 | `/users` | Staff user management |
 | `/evidence` | Evidence upload, filtering, and gallery |
-| `/materials` | Material management status page |
+| `/materials` | Material and sub-material management |
 | `/statistic-reports` | Statistical reporting and PDF export |
 
 ## Project structure
