@@ -7,6 +7,7 @@ import {
   createMaterial,
   getMaterials,
   setMaterialStatus,
+  syncMontevideoMaterialPresets,
   updateMaterial,
   updateSubMaterial,
 } from '../services/materialService';
@@ -18,11 +19,12 @@ const statusStyles = {
 };
 
 const ActiveMaterials = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState('');
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [newMaterialName, setNewMaterialName] = useState('');
@@ -33,7 +35,7 @@ const ActiveMaterials = () => {
     try {
       setLoading(true);
       setError('');
-      setMaterials(await getMaterials());
+      setMaterials(await getMaterials(language));
     } catch (loadError) {
       console.error(loadError);
       setError(t('No se pudieron cargar los materiales.'));
@@ -45,7 +47,7 @@ const ActiveMaterials = () => {
   useEffect(() => {
     loadMaterials();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [language]);
 
   const visibleMaterials = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -61,6 +63,7 @@ const ActiveMaterials = () => {
     try {
       setSaving(key);
       setError('');
+      setNotice('');
       await action();
     } catch (actionError) {
       console.error(actionError);
@@ -68,6 +71,15 @@ const ActiveMaterials = () => {
     } finally {
       setSaving('');
     }
+  };
+
+  const handleLoadPresets = () => {
+    if (!window.confirm(t('¿Agregar y sincronizar las categorías predefinidas de Montevideo App?'))) return;
+    runAction('sync-presets', async () => {
+      await syncMontevideoMaterialPresets();
+      await loadMaterials();
+      setNotice(t('Las categorías predefinidas de Montevideo App se sincronizaron correctamente.'));
+    });
   };
 
   const handleCreateMaterial = event => {
@@ -157,6 +169,19 @@ const ActiveMaterials = () => {
               {saving === 'create-material' ? t('Guardando...') : `+ ${t('Agregar Material')}`}
             </button>
           </form>
+          <div className="mt-4 flex flex-col gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-gray-500">
+              {t('Use los mismos identificadores y subcategorías predefinidas que Montevideo App.')}
+            </p>
+            <button
+              type="button"
+              onClick={handleLoadPresets}
+              disabled={saving === 'sync-presets'}
+              className="shrink-0 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 disabled:opacity-50"
+            >
+              {saving === 'sync-presets' ? t('Sincronizando...') : t('Cargar valores predefinidos de la App')}
+            </button>
+          </div>
         </section>
 
         <section className="mb-6 flex flex-col gap-3 rounded-2xl border border-white/60 bg-white/55 p-4 backdrop-blur sm:flex-row">
@@ -182,6 +207,11 @@ const ActiveMaterials = () => {
         {error && (
           <div role="alert" className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
             {error}
+          </div>
+        )}
+        {notice && (
+          <div role="status" className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+            {notice}
           </div>
         )}
 

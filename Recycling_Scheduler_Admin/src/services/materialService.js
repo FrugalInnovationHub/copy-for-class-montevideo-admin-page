@@ -1,9 +1,10 @@
-import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { MONTEVIDEO_MATERIAL_PRESETS } from '../data/montevideoMaterialPresets';
 
 const materialsCollection = collection(db, 'materials');
 
-const slugify = value => value
+const slugify = value => String(value || '')
   .normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '')
   .toLowerCase()
@@ -11,33 +12,79 @@ const slugify = value => value
   .replace(/[^a-z0-9]+/g, '_')
   .replace(/^_+|_+$/g, '');
 
-const normalizeSubMaterials = value => (
+const aliases = {
+  papel_carton: ['papel_carton', 'papel_y_carton', 'paper_cardboard'],
+  plasticos: ['plasticos', 'plastics', 'plastic'],
+  otros: ['otros', 'other', 'others', 'otros_reciclables', 'other_recyclables'],
+  organico: ['organico', 'organicos', 'organic', 'organics'],
+  descarte: ['descarte', 'discard'],
+};
+
+const localizedName = (data, language) => {
+  const names = data.names || (typeof data.name === 'object' ? data.name : null);
+  return names?.[language] || names?.es || names?.en || data.name || data.label || '';
+};
+
+const statusFromData = data => (
+  data.status || (data.archived === true ? 'archived' : data.active === false ? 'inactive' : 'active')
+);
+
+const normalizeEmbeddedSubMaterials = (value, language) => (
   Array.isArray(value)
     ? value.map(item => ({
-        id: item.id || slugify(item.name || crypto.randomUUID()),
-        name: item.name || item.id || '',
-        status: item.status || 'active',
+        id: item.id || slugify(localizedName(item, language) || crypto.randomUUID()),
+        documentId: null,
+        name: localizedName(item, language) || item.id || '',
+        names: item.names || null,
+        status: statusFromData(item),
+        storage: 'embedded',
       }))
     : []
 );
 
-const normalizeMaterial = snapshot => {
+const normalizeDocument = (snapshot, language) => {
   const data = snapshot.data() || {};
   return {
     id: snapshot.id,
-    name: data.name || snapshot.id,
-    status: data.status || 'active',
-    subMaterials: normalizeSubMaterials(data.subMaterials),
+    canonicalId: data.canonicalId || null,
+    parentId: data.parentId || data.parentMaterialId || null,
+    name: localizedName(data, language) || snapshot.id,
+    names: data.names || null,
+    status: statusFromData(data),
+    subMaterials: normalizeEmbeddedSubMaterials(data.subMaterials, language),
     createdAt: data.createdAt || null,
     updatedAt: data.updatedAt || null,
   };
 };
 
-export const getMaterials = async () => {
+export const getMaterials = async (language = 'es') => {
   const snapshot = await getDocs(materialsCollection);
-  return snapshot.docs
-    .map(normalizeMaterial)
-    .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+  const documents = snapshot.docs.map(item => normalizeDocument(item, language));
+  const roots = documents.filter(item => !item.parentId);
+  const children = documents.filter(item => item.parentId);
+
+  return roots
+    .map(material => {
+      const acceptedParentIds = new Set([material.id, material.canonicalId].filter(Boolean));
+      const flatChildren = children
+        .filter(item => acceptedParentIds.has(item.parentId))
+        .map(item => ({
+          id: item.id,
+          documentId: item.id,
+          name: item.name,
+          names: item.names,
+          status: item.status,
+          storage: 'flat',
+        }));
+      const merged = [...material.subMaterials];
+      flatChildren.forEach(child => {
+        const index = merged.findIndex(item => item.id === child.id);
+        if (index >= 0) merged[index] = child;
+        else merged.push(child);
+      });
+      return { ...material, subMaterials: merged };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, language, { sensitivity: 'base' }));
 };
 
 export const createMaterial = async name => {
@@ -51,17 +98,25 @@ export const createMaterial = async name => {
 
   const material = {
     name: trimmedName,
+    names: { es: trimmedName },
     status: 'active',
-    subMaterials: [],
+    active: true,
+    archived: false,
+    workflows: ['both'],
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
   await setDoc(reference, material);
-  return { id, ...material, createdAt: null, updatedAt: null };
+  return { id, ...material, subMaterials: [], createdAt: null, updatedAt: null };
 };
 
 export const updateMaterial = async (id, changes) => {
-  const patch = { ...changes, updatedAt: serverTimestamp() };
+  const compatibleChanges = { ...changes };
+  if (changes.status) {
+    compatibleChanges.active = changes.status === 'active';
+    compatibleChanges.archived = changes.status === 'archived';
+  }
+  const patch = { ...compatibleChanges, updatedAt: serverTimestamp() };
   await updateDoc(doc(materialsCollection, id), patch);
   return patch;
 };
@@ -73,20 +128,96 @@ export const addSubMaterial = async (material, name) => {
   if (!trimmedName) throw new Error('El nombre del submaterial es obligatorio');
   const id = slugify(trimmedName);
   if (!id) throw new Error('El nombre del submaterial debe contener letras o números');
-  if (material.subMaterials.some(item => item.id === id)) throw new Error('Ya existe un submaterial con este nombre');
+  if (material.subMaterials.some(item => item.id === id) || (await getDoc(doc(materialsCollection, id))).exists()) {
+    throw new Error('Ya existe un submaterial con este nombre');
+  }
 
-  const subMaterials = [
-    ...material.subMaterials,
-    { id, name: trimmedName, status: 'active' },
-  ];
-  await updateMaterial(material.id, { subMaterials });
-  return subMaterials;
+  await setDoc(doc(materialsCollection, id), {
+    names: { es: trimmedName },
+    name: trimmedName,
+    parentId: material.canonicalId || material.id,
+    status: 'active',
+    active: true,
+    archived: false,
+    workflows: ['classify'],
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return [...material.subMaterials, {
+    id,
+    documentId: id,
+    name: trimmedName,
+    names: { es: trimmedName },
+    status: 'active',
+    storage: 'flat',
+  }];
 };
 
 export const updateSubMaterial = async (material, subMaterialId, changes) => {
-  const subMaterials = material.subMaterials.map(item => (
+  const target = material.subMaterials.find(item => item.id === subMaterialId);
+  if (target?.storage === 'flat') {
+    await updateMaterial(target.documentId || target.id, changes);
+  } else {
+    const embedded = material.subMaterials.map(item => (
+      item.id === subMaterialId ? { ...item, ...changes } : item
+    ));
+    await updateMaterial(material.id, {
+      subMaterials: embedded.map(({ documentId, storage, ...item }) => item),
+    });
+  }
+  return material.subMaterials.map(item => (
     item.id === subMaterialId ? { ...item, ...changes } : item
   ));
-  await updateMaterial(material.id, { subMaterials });
-  return subMaterials;
+};
+
+const findExistingRoot = (documents, presetId) => {
+  const accepted = new Set(aliases[presetId] || [presetId]);
+  return documents.find(item => {
+    if (item.parentId) return false;
+    return [item.id, item.canonicalId, item.name, item.names?.es, item.names?.en]
+      .some(value => accepted.has(slugify(value)));
+  });
+};
+
+export const syncMontevideoMaterialPresets = async () => {
+  const snapshot = await getDocs(materialsCollection);
+  const documents = snapshot.docs.map(item => normalizeDocument(item, 'es'));
+  const batch = writeBatch(db);
+
+  MONTEVIDEO_MATERIAL_PRESETS.forEach((preset, materialIndex) => {
+    const existingRoot = findExistingRoot(documents, preset.id);
+    const rootDocumentId = existingRoot?.id || preset.id;
+    batch.set(doc(materialsCollection, rootDocumentId), {
+      canonicalId: preset.id,
+      names: preset.names,
+      color: preset.color,
+      status: existingRoot?.status || 'active',
+      active: existingRoot?.status !== 'inactive' && existingRoot?.status !== 'archived',
+      archived: existingRoot?.status === 'archived',
+      workflows: ['classify'],
+      sortOrder: materialIndex,
+      updatedAt: serverTimestamp(),
+      ...(!existingRoot ? { createdAt: serverTimestamp() } : {}),
+    }, { merge: true });
+
+    preset.subMaterials.forEach((subMaterial, subIndex) => {
+      // Organic and discard use the parent ID itself as their no-subcategory value.
+      if (subMaterial.id === preset.id) return;
+      const existingChild = documents.find(item => item.id === subMaterial.id);
+      batch.set(doc(materialsCollection, subMaterial.id), {
+        names: subMaterial.names,
+        color: subMaterial.color,
+        parentId: preset.id,
+        status: existingChild?.status || 'active',
+        active: existingChild?.status !== 'inactive' && existingChild?.status !== 'archived',
+        archived: existingChild?.status === 'archived',
+        workflows: ['classify'],
+        sortOrder: subIndex,
+        updatedAt: serverTimestamp(),
+        ...(!existingChild ? { createdAt: serverTimestamp() } : {}),
+      }, { merge: true });
+    });
+  });
+
+  await batch.commit();
 };
