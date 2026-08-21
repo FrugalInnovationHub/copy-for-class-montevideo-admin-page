@@ -13,9 +13,9 @@ import {
 } from '../services/materialService';
 
 const statusStyles = {
-  active: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  inactive: 'bg-amber-50 text-amber-700 border-amber-200',
-  archived: 'bg-gray-100 text-gray-600 border-gray-200',
+  active: 'border-emerald-600 bg-emerald-600 text-white',
+  inactive: 'border-amber-500 bg-amber-500 text-white',
+  archived: 'border-gray-600 bg-gray-600 text-white',
 };
 
 const ActiveMaterials = () => {
@@ -192,16 +192,19 @@ const ActiveMaterials = () => {
             placeholder={t('Buscar materiales o submateriales...')}
             className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white/90 px-4 py-2.5 text-sm outline-none focus:border-blue-500"
           />
-          <select
-            value={filter}
-            onChange={event => setFilter(event.target.value)}
-            className="rounded-xl border border-gray-200 bg-white/90 px-4 py-2.5 text-sm font-semibold text-gray-700"
-          >
-            <option value="all">{t('Todos los estados')}</option>
-            <option value="active">{t('Activos')}</option>
-            <option value="inactive">{t('Pausados')}</option>
-            <option value="archived">{t('Archivados')}</option>
-          </select>
+          <label htmlFor="category-status-filter" className="shrink-0">
+            <select
+              id="category-status-filter"
+              value={filter}
+              onChange={event => setFilter(event.target.value)}
+              className="rounded-xl border border-gray-200 bg-white/90 px-4 py-2.5 text-sm font-semibold text-gray-700"
+            >
+              <option value="all">{t('Todos los estados')}</option>
+              <option value="active">{t('Activos')}</option>
+              <option value="inactive">{t('Pausados')}</option>
+              <option value="archived">{t('Archivados')}</option>
+            </select>
+          </label>
         </section>
 
         {error && (
@@ -227,7 +230,10 @@ const ActiveMaterials = () => {
               const isExpanded = expanded[material.id];
               const isSaving = saving === `material-${material.id}`;
               return (
-                <article key={material.id} className="overflow-hidden rounded-3xl border border-white/70 bg-white/80 shadow-lg backdrop-blur-md">
+                <article
+                  key={material.id}
+                  className={`overflow-hidden rounded-3xl border shadow-lg backdrop-blur-md ${material.status === 'active' ? 'border-emerald-200 bg-emerald-100/80' : 'border-white/70 bg-white/80'}`}
+                >
                   <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                     <button
                       type="button"
@@ -237,15 +243,17 @@ const ActiveMaterials = () => {
                     >
                       <span className={`text-gray-400 transition ${isExpanded ? 'rotate-90' : ''}`}>▶</span>
                       <span className="min-w-0">
-                        <span className="block truncate text-lg font-bold text-gray-800">{material.name}</span>
+                        <span className="flex min-w-0 flex-wrap items-center gap-2">
+                          <span className="truncate text-lg font-bold text-gray-800">{material.name}</span>
+                          <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold shadow-sm ${statusStyles[material.status]}`}>
+                            {t(material.status === 'active' ? 'Activo' : material.status === 'inactive' ? 'Pausado' : 'Archivado')}
+                          </span>
+                        </span>
                         <span className="text-xs text-gray-400">{material.subMaterials.length} {t('submateriales')}</span>
                       </span>
                     </button>
 
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`rounded-full border px-2.5 py-1 text-xs font-bold ${statusStyles[material.status]}`}>
-                        {t(material.status === 'active' ? 'Activo' : material.status === 'inactive' ? 'Pausado' : 'Archivado')}
-                      </span>
                       <button disabled={isSaving} onClick={() => handleRenameMaterial(material)} className="rounded-lg px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50">{t('Editar')}</button>
                       {material.status !== 'active' && <button disabled={isSaving} onClick={() => handleMaterialStatus(material, 'active')} className="rounded-lg px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50">{t('Activar')}</button>}
                       {material.status === 'active' && <button disabled={isSaving} onClick={() => handleMaterialStatus(material, 'inactive')} className="rounded-lg px-3 py-2 text-xs font-bold text-amber-700 hover:bg-amber-50">{t('Pausar')}</button>}

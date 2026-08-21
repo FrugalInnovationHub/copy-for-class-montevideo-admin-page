@@ -69,6 +69,7 @@ const translations = [
   ['Nombre del nuevo material', 'New material name'],
   ['Nombre del nuevo submaterial', 'New sub-material name'],
   ['Buscar materiales o submateriales...', 'Search materials or sub-materials...'],
+  ['Estado de categoría', 'Category status'],
   ['Todos los estados', 'All statuses'],
   ['No se encontraron materiales.', 'No materials were found.'],
   ['Este material no tiene submateriales.', 'This material has no sub-materials.'],
