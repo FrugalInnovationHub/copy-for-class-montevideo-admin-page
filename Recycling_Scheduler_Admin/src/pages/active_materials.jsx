@@ -28,7 +28,7 @@ const ActiveMaterials = () => {
   const [notice, setNotice] = useState('');
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
-  const [newMaterialName, setNewMaterialName] = useState('');
+  const [newMaterialNames, setNewMaterialNames] = useState({ es: '', en: '' });
   const [expanded, setExpanded] = useState({});
   const [subMaterialNames, setSubMaterialNames] = useState({});
 
@@ -85,11 +85,10 @@ const ActiveMaterials = () => {
 
   const handleCreateMaterial = event => {
     event.preventDefault();
-    const name = newMaterialName.trim();
-    if (!name) return;
+    if (!newMaterialNames.es.trim() || !newMaterialNames.en.trim()) return;
     runAction('create-material', async () => {
-      await createMaterial(name);
-      setNewMaterialName('');
+      await createMaterial(newMaterialNames);
+      setNewMaterialNames({ es: '', en: '' });
       await loadMaterials();
     });
   };
@@ -117,12 +116,12 @@ const ActiveMaterials = () => {
   };
 
   const handleAddSubMaterial = material => {
-    const name = (subMaterialNames[material.id] || '').trim();
-    if (!name) return;
+    const names = subMaterialNames[material.id] || { es: '', en: '' };
+    if (!names.es.trim() || !names.en.trim()) return;
     runAction(`sub-create-${material.id}`, async () => {
-      const subMaterials = await addSubMaterial(material, name);
-      setMaterials(current => current.map(item => item.id === material.id ? { ...item, subMaterials } : item));
-      setSubMaterialNames(current => ({ ...current, [material.id]: '' }));
+      await addSubMaterial(material, names);
+      setSubMaterialNames(current => ({ ...current, [material.id]: { es: '', en: '' } }));
+      await loadMaterials();
     });
   };
 
@@ -165,15 +164,24 @@ const ActiveMaterials = () => {
         <section className="mb-6 rounded-3xl border border-white/60 bg-white/70 p-5 shadow-xl backdrop-blur-md">
           <form onSubmit={handleCreateMaterial} className="flex flex-col gap-3 sm:flex-row">
             <input
-              value={newMaterialName}
-              onChange={event => setNewMaterialName(event.target.value)}
-              placeholder={t('Nombre del nuevo material')}
+              value={newMaterialNames.es}
+              onChange={event => setNewMaterialNames(current => ({ ...current, es: event.target.value }))}
+              placeholder={t('Nombre del material en español')}
+              aria-label={t('Nombre del material en español')}
+              maxLength={80}
+              className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+            />
+            <input
+              value={newMaterialNames.en}
+              onChange={event => setNewMaterialNames(current => ({ ...current, en: event.target.value }))}
+              placeholder={t('Nombre del material en inglés')}
+              aria-label={t('Nombre del material en inglés')}
               maxLength={80}
               className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
             />
             <button
               type="submit"
-              disabled={!newMaterialName.trim() || saving === 'create-material'}
+              disabled={!newMaterialNames.es.trim() || !newMaterialNames.en.trim() || saving === 'create-material'}
               className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving === 'create-material' ? t('Guardando...') : `+ ${t('Agregar Material')}`}
@@ -275,16 +283,31 @@ const ActiveMaterials = () => {
                     <div className="border-t border-gray-100 bg-gray-50/60 p-5">
                       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
                         <input
-                          value={subMaterialNames[material.id] || ''}
-                          onChange={event => setSubMaterialNames(current => ({ ...current, [material.id]: event.target.value }))}
-                          placeholder={t('Nombre del nuevo submaterial')}
+                          value={subMaterialNames[material.id]?.es || ''}
+                          onChange={event => setSubMaterialNames(current => ({
+                            ...current,
+                            [material.id]: { ...(current[material.id] || {}), es: event.target.value },
+                          }))}
+                          placeholder={t('Nombre del submaterial en español')}
+                          aria-label={t('Nombre del submaterial en español')}
+                          maxLength={80}
+                          className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500"
+                        />
+                        <input
+                          value={subMaterialNames[material.id]?.en || ''}
+                          onChange={event => setSubMaterialNames(current => ({
+                            ...current,
+                            [material.id]: { ...(current[material.id] || {}), en: event.target.value },
+                          }))}
+                          placeholder={t('Nombre del submaterial en inglés')}
+                          aria-label={t('Nombre del submaterial en inglés')}
                           maxLength={80}
                           className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500"
                         />
                         <button
                           type="button"
                           onClick={() => handleAddSubMaterial(material)}
-                          disabled={!subMaterialNames[material.id]?.trim() || saving === `sub-create-${material.id}`}
+                          disabled={!subMaterialNames[material.id]?.es?.trim() || !subMaterialNames[material.id]?.en?.trim() || saving === `sub-create-${material.id}`}
                           className="rounded-xl bg-gray-800 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
                         >
                           + {t('Agregar Submaterial')}

@@ -1,6 +1,6 @@
 import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { MONTEVIDEO_MATERIAL_PRESETS } from '../data/montevideoMaterialPresets';
+import { db } from '../../firebase.js';
+import { MONTEVIDEO_MATERIAL_PRESETS } from '../data/montevideoMaterialPresets.js';
 
 const materialsCollection = collection(db, 'materials');
 
@@ -20,7 +20,7 @@ const aliases = {
   descarte: ['descarte', 'discard', 'mezclado', 'mixed', 'mixed_waste'],
 };
 
-const localizedName = (data, language) => {
+export const localizedName = (data, language) => {
   const names = data.names || (typeof data.name === 'object' ? data.name : null);
   return names?.[language] || names?.es || names?.en || data.name || data.label || '';
 };
@@ -87,18 +87,24 @@ export const getMaterials = async (language = 'es') => {
     .sort((a, b) => a.name.localeCompare(b.name, language, { sensitivity: 'base' }));
 };
 
-export const createMaterial = async name => {
-  const trimmedName = name.trim();
-  if (!trimmedName) throw new Error('El nombre del material es obligatorio');
-  const id = slugify(trimmedName);
+const normalizeRequiredNames = names => {
+  const es = String(names?.es || '').trim();
+  const en = String(names?.en || '').trim();
+  if (!es || !en) throw new Error('Los nombres en español e inglés son obligatorios');
+  return { es, en };
+};
+
+export const createMaterial = async names => {
+  const localizedNames = normalizeRequiredNames(names);
+  const id = slugify(localizedNames.es || localizedNames.en);
   if (!id) throw new Error('El nombre del material debe contener letras o números');
 
   const reference = doc(materialsCollection, id);
   if ((await getDoc(reference)).exists()) throw new Error('Ya existe un material con este nombre');
 
   const material = {
-    name: trimmedName,
-    names: { es: trimmedName },
+    name: localizedNames.es,
+    names: localizedNames,
     status: 'active',
     active: true,
     archived: false,
@@ -139,18 +145,17 @@ export const updateMaterialNames = async (id, names) => {
 
 export const setMaterialStatus = (id, status) => updateMaterial(id, { status });
 
-export const addSubMaterial = async (material, name) => {
-  const trimmedName = name.trim();
-  if (!trimmedName) throw new Error('El nombre del submaterial es obligatorio');
-  const id = slugify(trimmedName);
+export const addSubMaterial = async (material, names) => {
+  const localizedNames = normalizeRequiredNames(names);
+  const id = slugify(localizedNames.es || localizedNames.en);
   if (!id) throw new Error('El nombre del submaterial debe contener letras o números');
   if (material.subMaterials.some(item => item.id === id) || (await getDoc(doc(materialsCollection, id))).exists()) {
     throw new Error('Ya existe un submaterial con este nombre');
   }
 
   await setDoc(doc(materialsCollection, id), {
-    names: { es: trimmedName },
-    name: trimmedName,
+    names: localizedNames,
+    name: localizedNames.es,
     parentId: material.canonicalId || material.id,
     status: 'active',
     active: true,
@@ -166,8 +171,8 @@ export const addSubMaterial = async (material, name) => {
   return [...material.subMaterials, {
     id,
     documentId: id,
-    name: trimmedName,
-    names: { es: trimmedName },
+    name: localizedNames.es,
+    names: localizedNames,
     status: 'active',
     storage: 'flat',
   }];
