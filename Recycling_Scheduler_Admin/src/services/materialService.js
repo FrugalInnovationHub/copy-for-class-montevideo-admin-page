@@ -17,7 +17,7 @@ const aliases = {
   plasticos: ['plasticos', 'plastics', 'plastic'],
   otros: ['otros', 'other', 'others', 'otros_reciclables', 'other_recyclables'],
   organico: ['organico', 'organicos', 'organic', 'organics'],
-  descarte: ['descarte', 'discard'],
+  descarte: ['descarte', 'discard', 'mezclado', 'mixed', 'mixed_waste'],
 };
 
 const localizedName = (data, language) => {
@@ -103,6 +103,7 @@ export const createMaterial = async name => {
     active: true,
     archived: false,
     workflows: ['both'],
+    hasSubMaterials: false,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
@@ -118,6 +119,21 @@ export const updateMaterial = async (id, changes) => {
   }
   const patch = { ...compatibleChanges, updatedAt: serverTimestamp() };
   await updateDoc(doc(materialsCollection, id), patch);
+  return patch;
+};
+
+export const updateMaterialNames = async (id, names) => {
+  const reference = doc(materialsCollection, id);
+  const snapshot = await getDoc(reference);
+  if (!snapshot.exists()) throw new Error('No se encontró el material');
+  const current = snapshot.data() || {};
+  const mergedNames = { ...(current.names || {}), ...names };
+  const patch = {
+    names: mergedNames,
+    name: mergedNames.es || mergedNames.en || current.name || id,
+    updatedAt: serverTimestamp(),
+  };
+  await updateDoc(reference, patch);
   return patch;
 };
 
@@ -141,6 +157,10 @@ export const addSubMaterial = async (material, name) => {
     archived: false,
     workflows: ['classify'],
     createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  await updateDoc(doc(materialsCollection, material.id), {
+    hasSubMaterials: true,
     updatedAt: serverTimestamp(),
   });
   return [...material.subMaterials, {
@@ -194,7 +214,8 @@ export const syncMontevideoMaterialPresets = async () => {
       status: existingRoot?.status || 'active',
       active: existingRoot?.status !== 'inactive' && existingRoot?.status !== 'archived',
       archived: existingRoot?.status === 'archived',
-      workflows: ['classify'],
+      workflows: ['both'],
+      hasSubMaterials: preset.subMaterials.length > 0,
       sortOrder: materialIndex,
       updatedAt: serverTimestamp(),
       ...(!existingRoot ? { createdAt: serverTimestamp() } : {}),

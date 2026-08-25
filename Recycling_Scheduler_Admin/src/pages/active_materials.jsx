@@ -9,6 +9,7 @@ import {
   setMaterialStatus,
   syncMontevideoMaterialPresets,
   updateMaterial,
+  updateMaterialNames,
   updateSubMaterial,
 } from '../services/materialService';
 
@@ -74,11 +75,11 @@ const ActiveMaterials = () => {
   };
 
   const handleLoadPresets = () => {
-    if (!window.confirm(t('¿Agregar y sincronizar las categorías predefinidas de Montevideo App?'))) return;
+    if (!window.confirm(t('Esto creará los materiales predeterminados que falten y restaurará sus nombres, colores y estructura. Los estados y el historial se conservarán. ¿Desea continuar?'))) return;
     runAction('sync-presets', async () => {
       await syncMontevideoMaterialPresets();
       await loadMaterials();
-      setNotice(t('Las categorías predefinidas de Montevideo App se sincronizaron correctamente.'));
+      setNotice(t('Los materiales predeterminados se inicializaron o restauraron correctamente.'));
     });
   };
 
@@ -94,11 +95,15 @@ const ActiveMaterials = () => {
   };
 
   const handleRenameMaterial = material => {
-    const name = window.prompt(t('Nuevo nombre del material'), material.name)?.trim();
-    if (!name || name === material.name) return;
+    const spanishName = window.prompt(t('Nombre en español'), material.names?.es || material.name)?.trim();
+    if (!spanishName) return;
+    const englishName = window.prompt(t('Nombre en inglés'), material.names?.en || material.name)?.trim();
+    if (!englishName) return;
     runAction(`material-${material.id}`, async () => {
-      await updateMaterial(material.id, { name });
-      setMaterials(current => current.map(item => item.id === material.id ? { ...item, name } : item));
+      await updateMaterialNames(material.id, { es: spanishName, en: englishName });
+      setMaterials(current => current.map(item => item.id === material.id
+        ? { ...item, name: language === 'en' ? englishName : spanishName, names: { es: spanishName, en: englishName } }
+        : item));
     });
   };
 
@@ -122,10 +127,15 @@ const ActiveMaterials = () => {
   };
 
   const handleRenameSubMaterial = (material, subMaterial) => {
-    const name = window.prompt(t('Nuevo nombre del submaterial'), subMaterial.name)?.trim();
-    if (!name || name === subMaterial.name) return;
+    const spanishName = window.prompt(t('Nombre en español'), subMaterial.names?.es || subMaterial.name)?.trim();
+    if (!spanishName) return;
+    const englishName = window.prompt(t('Nombre en inglés'), subMaterial.names?.en || subMaterial.name)?.trim();
+    if (!englishName) return;
     runAction(`sub-${material.id}-${subMaterial.id}`, async () => {
-      const subMaterials = await updateSubMaterial(material, subMaterial.id, { name });
+      const subMaterials = await updateSubMaterial(material, subMaterial.id, {
+        name: spanishName,
+        names: { es: spanishName, en: englishName },
+      });
       setMaterials(current => current.map(item => item.id === material.id ? { ...item, subMaterials } : item));
     });
   };
@@ -171,7 +181,7 @@ const ActiveMaterials = () => {
           </form>
           <div className="mt-4 flex flex-col gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-gray-500">
-              {t('Use los mismos identificadores y subcategorías predefinidas que Montevideo App.')}
+              {t('Use esta acción solamente para inicializar o restaurar la estructura predeterminada de materiales.')}
             </p>
             <button
               type="button"
@@ -179,7 +189,7 @@ const ActiveMaterials = () => {
               disabled={saving === 'sync-presets'}
               className="shrink-0 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 disabled:opacity-50"
             >
-              {saving === 'sync-presets' ? t('Sincronizando...') : t('Cargar valores predefinidos de la App')}
+              {saving === 'sync-presets' ? t('Restaurando...') : t('Inicializar / Restaurar materiales predeterminados')}
             </button>
           </div>
         </section>
