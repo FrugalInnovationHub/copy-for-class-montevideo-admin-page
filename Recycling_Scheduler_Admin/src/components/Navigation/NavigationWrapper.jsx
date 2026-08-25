@@ -1,11 +1,13 @@
 import React from 'react';
 import useIsMobile from '../hooks/useIsMobile';
 import { Link, useLocation } from 'react-router-dom';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const NavigationWrapper = ({ children }) => {
   const mobileNavigation = useIsMobile();
   return (
     <>
+      <LanguageToggle />
       {mobileNavigation ? (
         <div className='relative h-screen w-screen flex flex-col'>
           <Background>
@@ -28,6 +30,25 @@ const NavigationWrapper = ({ children }) => {
         </div>
       )}
     </>
+  );
+};
+
+const LanguageToggle = () => {
+  const { language, toggleLanguage } = useLanguage();
+  const isEnglish = language === 'en';
+
+  return (
+    <button
+      type="button"
+      data-no-translate
+      onClick={toggleLanguage}
+      className="fixed right-4 top-4 z-[70] flex items-center gap-2 rounded-xl border border-white/70 bg-white/95 px-3.5 py-2.5 text-xs font-bold text-blue-700 shadow-lg backdrop-blur-xl transition hover:bg-blue-50 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+      aria-label={isEnglish ? 'Cambiar a español' : 'Switch to English'}
+      title={isEnglish ? 'Cambiar a español' : 'Switch to English'}
+    >
+      <span aria-hidden="true">🌐</span>
+      <span>{isEnglish ? 'Español' : 'English'}</span>
+    </button>
   );
 };
 

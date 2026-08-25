@@ -6,8 +6,10 @@ import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, BarChart, Ba
 import { useReactToPrint } from 'react-to-print';
 import { generatePDFReport } from '../helpers/generatePDF';
 import { PencilSquareIcon, ArrowDownTrayIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const StatisticReports = () => {
+  const { language, t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -72,18 +74,26 @@ const StatisticReports = () => {
       return;
     }
 
-    const reportTitle = getReportHeaderTitle();
+    const reportTitle = t(getReportHeaderTitle());
     const chartTitle = getChartTitle();
 
     await generatePDFReport({
       selectedClient,
       selectedYear,
       selectedMonth,
-      monthlyData,
+      monthlyData: monthlyData.map(row => ({
+        ...row,
+        month: t(row.month),
+        monthFull: t(row.monthFull),
+      })),
       totals,
-      pieChartData,
+      pieChartData: pieChartData.map(item => ({ ...item, name: t(item.name) })),
       reportTitle,
-      chartTitle,
+      chartTitle: {
+        ...chartTitle,
+        main: t(chartTitle.main),
+        subtitle: t(chartTitle.subtitle),
+      },
       aiSummary,
       editedSummary,
       committedSummary
@@ -118,8 +128,8 @@ const StatisticReports = () => {
       // Format report data for AI
       const reportData = {
         client: selectedClient.client_name,
-        year: selectedYear === "last_12_months" ? "Últimos 12 Meses" : selectedYear,
-        month: selectedMonth !== '' ? MONTHS[parseInt(selectedMonth)] : 'Todos los meses',
+        year: selectedYear === "last_12_months" ? t("Últimos 12 Meses") : selectedYear,
+        month: selectedMonth !== '' ? t(MONTHS[parseInt(selectedMonth)]) : t('Todos los meses'),
         totals: {
           plasticos: totals.plasticos || 0,
           papel_carton: totals.papel_carton || 0,
@@ -141,7 +151,24 @@ const StatisticReports = () => {
       const totalWeight = reportData.totals.plasticos + reportData.totals.papel_carton +
         reportData.totals.organico + reportData.totals.otros + reportData.totals.descarte;
 
-      const prompt = `Analiza los siguientes datos de gestión de residuos y genera un resumen ejecutivo narrativo en español:
+      const prompt = language === 'en' ? `Analyze the following waste-management data and write a professional executive summary in English:
+
+Client: ${reportData.client}
+Period: ${reportData.month} ${reportData.year}
+
+Material totals:
+- Plastics: ${Math.round(reportData.totals.plasticos).toLocaleString()} kg
+- Paper and cardboard: ${Math.round(reportData.totals.papel_carton).toLocaleString()} kg
+- Organic waste: ${Math.round(reportData.totals.organico).toLocaleString()} kg
+- Other: ${Math.round(reportData.totals.otros).toLocaleString()} kg
+- Landfill waste: ${Math.round(reportData.totals.descarte).toLocaleString()} kg
+
+Overall total: ${Math.round(totalWeight).toLocaleString()} kg
+
+Monthly data:
+${reportData.monthlyData.map(row => `- ${row.month}: ${Math.round((row.plasticos + row.papel_carton + row.organico + row.otros + row.descarte)).toLocaleString()} kg`).join('\n')}
+
+Identify patterns, trends, the most and least collected materials, monthly variation, and opportunities for improvement. Write no more than 200 words as connected professional prose. Return only the summary.` : `Analiza los siguientes datos de gestión de residuos y genera un resumen ejecutivo narrativo en español:
 
 Cliente: ${reportData.client}
 Período: ${reportData.month} ${reportData.year}
@@ -264,7 +291,42 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
 
         summary += `Estos datos proporcionan una base sólida para optimizar las estrategias de gestión de residuos y mejorar los procesos de reciclaje en el futuro.`;
 
-        setAiSummary(summary);
+        if (language === 'en') {
+          const englishMaterialNames = {
+            plasticos: 'plastics',
+            papel_carton: 'paper and cardboard',
+            organico: 'organic waste',
+            otros: 'other materials',
+            descarte: 'landfill waste'
+          };
+          const englishTopName = englishMaterialNames[topMaterial[0]] || 'the leading material';
+          let englishSummary = `During ${reportData.month} ${reportData.year}, ${reportData.client} managed a total of ${Math.round(totalWeight).toLocaleString()} kg of waste. `;
+          englishSummary += `${englishTopName} was the dominant material at ${topMaterialPct}% of the total (${Math.round(topMaterial[1]).toLocaleString()} kg). `;
+
+          if (bottomMaterial && bottomMaterial[1] > 0) {
+            const bottomPct = Math.round((bottomMaterial[1] / totalWeight) * 100);
+            englishSummary += `${englishMaterialNames[bottomMaterial[0]] || 'The least collected material'} represented ${bottomPct}% of the total, indicating comparatively low generation. `;
+          }
+
+          if (monthlyTotals.length > 1) {
+            englishSummary += `${bestMonth.month} recorded the highest monthly collection (${Math.round(bestMonth.total).toLocaleString()} kg)`;
+            if (worstMonth.month !== bestMonth.month) {
+              englishSummary += `, while ${worstMonth.month} recorded the lowest (${Math.round(worstMonth.total).toLocaleString()} kg)`;
+            }
+            englishSummary += '. ';
+            if (monthlyTotals.length >= 3) {
+              const englishTrend = trend === 'creciente' ? 'increasing' : trend === 'decreciente' ? 'decreasing' : 'stable';
+              englishSummary += `The overall trend was ${englishTrend}`;
+              if (trendChange > 5) englishSummary += `, with a significant variation of ${Math.round(trendChange)}%`;
+              englishSummary += '. ';
+            }
+          }
+
+          englishSummary += 'These results provide a sound basis for improving waste-management strategies and recycling processes.';
+          setAiSummary(englishSummary);
+        } else {
+          setAiSummary(summary);
+        }
         return;
       }
 
@@ -282,7 +344,9 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
           messages: [
             {
               role: 'system',
-              content: 'Eres un experto analista de gestión de residuos que genera resúmenes ejecutivos concisos y profesionales en español.'
+              content: language === 'en'
+                ? 'You are a waste-management analyst who writes concise, professional executive summaries in English.'
+                : 'Eres un experto analista de gestión de residuos que genera resúmenes ejecutivos concisos y profesionales en español.'
             },
             {
               role: 'user',
@@ -327,6 +391,14 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
       setLoadingSummary(false);
     }
   };
+
+  useEffect(() => {
+    if (reportGenerated && collections.length > 0 && !isEditMode && !committedSummary) {
+      generateAISummary();
+    }
+    // Regenerate generated prose in the newly selected language.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
 
   // Fetch all clients on component mount
   useEffect(() => {
@@ -1122,7 +1194,7 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                       {isEditMode && <span className="ml-3 text-blue-600 text-lg">(Modo Edición)</span>}
                     </h2>
                     <p className="text-center text-lg mt-2" style={{ color: 'rgba(0,0,0,0.6)' }}>
-                      {selectedClient.client_name} - {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      {selectedClient.client_name} - {new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                     {loadingCollections && (
                       <div className="w-8 h-8 mt-2 mx-auto">
