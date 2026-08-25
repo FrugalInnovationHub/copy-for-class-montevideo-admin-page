@@ -56,4 +56,10 @@ export const MONTEVIDEO_MATERIAL_PRESETS = [
       { id: 'descarte', names: { es: 'Descarte', en: 'Discard' }, color: '#5B1466' },
     ],
   },
+  {
+    id: 'sin_identificar',
+    names: { es: 'Sin Identificar', en: 'Unidentified' },
+    color: '#2D9CDB',
+    subMaterials: [],
+  },
 ];
