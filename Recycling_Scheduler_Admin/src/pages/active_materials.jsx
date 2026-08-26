@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import NavigationWrapper from '../components/Navigation/NavigationWrapper';
 import Spinner from '../components/Navigation/Spinner';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -10,6 +10,7 @@ import {
   syncMontevideoMaterialPresets,
   updateMaterial,
   updateSubMaterial,
+  uploadMaterialPhoto,
 } from '../services/materialService';
 
 const statusStyles = {
@@ -28,6 +29,11 @@ const ActiveMaterials = () => {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [newMaterialName, setNewMaterialName] = useState('');
+  const [newMaterialPhoto, setNewMaterialPhoto] = useState(null);
+  const newMaterialPhotoInputRef = useRef(null);
+  const [editingMaterial, setEditingMaterial] = useState(null);
+  const [editMaterialName, setEditMaterialName] = useState('');
+  const [editMaterialPhoto, setEditMaterialPhoto] = useState(null);
   const [expanded, setExpanded] = useState({});
   const [subMaterialNames, setSubMaterialNames] = useState({});
 
@@ -87,18 +93,47 @@ const ActiveMaterials = () => {
     const name = newMaterialName.trim();
     if (!name) return;
     runAction('create-material', async () => {
-      await createMaterial(name);
+      const photoUrl = newMaterialPhoto ? await uploadMaterialPhoto(newMaterialPhoto, name) : '';
+      await createMaterial(name, photoUrl);
       setNewMaterialName('');
+      setNewMaterialPhoto(null);
+      if (newMaterialPhotoInputRef.current) newMaterialPhotoInputRef.current.value = '';
       await loadMaterials();
     });
   };
 
-  const handleRenameMaterial = material => {
-    const name = window.prompt(t('Nuevo nombre del material'), material.name)?.trim();
-    if (!name || name === material.name) return;
-    runAction(`material-${material.id}`, async () => {
-      await updateMaterial(material.id, { name });
-      setMaterials(current => current.map(item => item.id === material.id ? { ...item, name } : item));
+  const handleStartEditMaterial = material => {
+    setEditingMaterial(material);
+    setEditMaterialName(material.name);
+    setEditMaterialPhoto(null);
+  };
+
+  const handleCancelMaterialEdit = () => {
+    setEditingMaterial(null);
+    setEditMaterialName('');
+    setEditMaterialPhoto(null);
+  };
+
+  const handleSaveMaterialEdit = event => {
+    event.preventDefault();
+    if (!editingMaterial) return;
+    const name = editMaterialName.trim();
+    if (!name) return;
+
+    runAction(`material-${editingMaterial.id}`, async () => {
+      const changes = {};
+      if (name !== editingMaterial.name) changes.name = name;
+      if (editMaterialPhoto) {
+        const uploadedPhotoUrl = await uploadMaterialPhoto(editMaterialPhoto, name);
+        Object.assign(changes, { photoUrl: uploadedPhotoUrl, imageUrl: uploadedPhotoUrl });
+      }
+      if (Object.keys(changes).length === 0) {
+        handleCancelMaterialEdit();
+        return;
+      }
+      await updateMaterial(editingMaterial.id, changes);
+      setMaterials(current => current.map(item => item.id === editingMaterial.id ? { ...item, ...changes } : item));
+      handleCancelMaterialEdit();
     });
   };
 
@@ -161,6 +196,17 @@ const ActiveMaterials = () => {
               maxLength={80}
               className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
             />
+            <label className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-500 transition hover:border-blue-200 hover:bg-blue-50/40">
+              <input
+                ref={newMaterialPhotoInputRef}
+                type="file"
+                accept="image/*"
+                onChange={event => setNewMaterialPhoto(event.target.files?.[0] || null)}
+                className="sr-only"
+              />
+              <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">{t('Subir foto')}</span>
+              <span className="max-w-28 truncate text-xs">{newMaterialPhoto?.name || t('Sin foto')}</span>
+            </label>
             <button
               type="submit"
               disabled={!newMaterialName.trim() || saving === 'create-material'}
@@ -254,12 +300,53 @@ const ActiveMaterials = () => {
                     </button>
 
                     <div className="flex flex-wrap items-center gap-2">
-                      <button disabled={isSaving} onClick={() => handleRenameMaterial(material)} className="rounded-lg px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50">{t('Editar')}</button>
+                      <button disabled={isSaving} onClick={() => handleStartEditMaterial(material)} className="rounded-lg px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50">{t('Editar')}</button>
                       {material.status !== 'active' && <button disabled={isSaving} onClick={() => handleMaterialStatus(material, 'active')} className="rounded-lg px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50">{t('Activar')}</button>}
                       {material.status === 'active' && <button disabled={isSaving} onClick={() => handleMaterialStatus(material, 'inactive')} className="rounded-lg px-3 py-2 text-xs font-bold text-amber-700 hover:bg-amber-50">{t('Pausar')}</button>}
                       {material.status !== 'archived' && <button disabled={isSaving} onClick={() => handleMaterialStatus(material, 'archived')} className="rounded-lg px-3 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100">{t('Archivar')}</button>}
                     </div>
                   </div>
+
+                  {editingMaterial?.id === material.id && (
+                    <form onSubmit={handleSaveMaterialEdit} className="border-t border-blue-100 bg-blue-50/60 p-5">
+                      <div className="flex flex-col gap-3 sm:flex-row">
+                        <input
+                          value={editMaterialName}
+                          onChange={event => setEditMaterialName(event.target.value)}
+                          placeholder={t('Nuevo nombre del material')}
+                          maxLength={80}
+                          className="min-w-0 flex-1 rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500"
+                        />
+                        <label className="flex items-center gap-2 rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-gray-500 transition hover:border-blue-200">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={event => setEditMaterialPhoto(event.target.files?.[0] || null)}
+                            className="sr-only"
+                          />
+                          <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">{t('Cambiar foto')}</span>
+                          <span className="max-w-32 truncate text-xs">{editMaterialPhoto?.name || t('Mantener foto actual')}</span>
+                        </label>
+                        <div className="flex gap-2">
+                          <button
+                            type="submit"
+                            disabled={!editMaterialName.trim() || isSaving}
+                            className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
+                          >
+                            {isSaving ? t('Guardando...') : t('Guardar')}
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isSaving}
+                            onClick={handleCancelMaterialEdit}
+                            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-600 disabled:opacity-50"
+                          >
+                            {t('Cancelar')}
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  )}
 
                   {isExpanded && (
                     <div className="border-t border-gray-100 bg-gray-50/60 p-5">

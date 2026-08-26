@@ -18,3 +18,22 @@ test('category status filter has no visible title and filters material categorie
   assert.match(source, /id="category-status-filter"[\s\S]*value=\{filter\}/);
   assert.match(source, /filter !== 'all' && material\.status !== filter/);
 });
+
+test('new material form supports an optional material photo upload', () => {
+  assert.match(source, /newMaterialPhoto/);
+  assert.match(source, /type="file"[\s\S]*accept="image\/\*"/);
+  assert.match(source, /Subir foto/);
+  assert.match(source, /Sin foto/);
+  assert.match(source, /uploadMaterialPhoto\(newMaterialPhoto, name\)/);
+  assert.match(source, /createMaterial\(name, photoUrl\)/);
+});
+
+test('edit material workflow supports changing the material photo', () => {
+  assert.match(source, /editingMaterial/);
+  assert.match(source, /editMaterialPhoto/);
+  assert.match(source, /handleStartEditMaterial\(material\)/);
+  assert.match(source, /handleSaveMaterialEdit/);
+  assert.match(source, /uploadMaterialPhoto\(editMaterialPhoto, name\)/);
+  assert.match(source, /photoUrl: uploadedPhotoUrl, imageUrl: uploadedPhotoUrl/);
+  assert.match(source, /updateMaterial\(editingMaterial\.id, changes\)/);
+});
