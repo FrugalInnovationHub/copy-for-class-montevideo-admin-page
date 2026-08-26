@@ -10,3 +10,7 @@ test('material service can upload and store a material photo url', () => {
   assert.match(source, /photoUrl/);
   assert.match(source, /const material = \{[\s\S]*photoUrl,[\s\S]*imageUrl: photoUrl,[\s\S]*\};/);
 });
+
+test('material service requires a photo url when creating a material', () => {
+  assert.match(source, /if \(!photoUrl\) throw new Error\('La foto del material es obligatoria'\)/);
+});

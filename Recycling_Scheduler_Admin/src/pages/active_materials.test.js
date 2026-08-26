@@ -31,21 +31,25 @@ test('new materials and sub-materials require both Spanish and English names', (
   assert.match(serviceSource, /names: localizedNames/);
 });
 
-test('new material form supports an optional material photo upload', () => {
+test('new material form requires a material photo upload', () => {
   assert.match(source, /newMaterialPhoto/);
   assert.match(source, /type="file"[\s\S]*accept="image\/\*"/);
   assert.match(source, /Subir foto/);
-  assert.match(source, /Sin foto/);
+  assert.match(source, /Foto obligatoria/);
+  assert.match(source, /if \(!newMaterialPhoto\) return/);
+  assert.match(source, /disabled=\{!newMaterialNames\.es\.trim\(\) \|\| !newMaterialNames\.en\.trim\(\) \|\| !newMaterialPhoto \|\| saving === 'create-material'\}/);
   assert.match(source, /uploadMaterialPhoto\(newMaterialPhoto, materialLabel\)/);
   assert.match(source, /createMaterial\(newMaterialNames, photoUrl\)/);
 });
 
-test('edit material workflow supports changing the material photo', () => {
+test('edit material workflow requires changing the material photo before saving', () => {
   assert.match(source, /editingMaterial/);
   assert.match(source, /editMaterialPhoto/);
   assert.match(source, /editMaterialNames/);
   assert.match(source, /handleStartEditMaterial\(material\)/);
   assert.match(source, /handleSaveMaterialEdit/);
+  assert.match(source, /if \(!editMaterialPhoto\) return/);
+  assert.match(source, /disabled=\{!editMaterialNames\.es\.trim\(\) \|\| !editMaterialNames\.en\.trim\(\) \|\| !editMaterialPhoto \|\| isSaving\}/);
   assert.match(source, /uploadMaterialPhoto\(editMaterialPhoto, names\.es \|\| names\.en\)/);
   assert.match(source, /photoUrl: uploadedPhotoUrl, imageUrl: uploadedPhotoUrl/);
   assert.match(source, /updateMaterial\(editingMaterial\.id, \{ photoUrl: uploadedPhotoUrl, imageUrl: uploadedPhotoUrl \}\)/);
