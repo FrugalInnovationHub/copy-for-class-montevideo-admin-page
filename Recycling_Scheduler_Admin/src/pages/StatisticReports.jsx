@@ -603,11 +603,17 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
     'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
   ];
 
-  const MONTHS_SHORT = [
+  const MONTHS_SHORT_ES = [
     'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
     'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
   ];
 
+  const MONTHS_SHORT_EN = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  const MONTHS_SHORT = language === 'en' ? MONTHS_SHORT_EN : MONTHS_SHORT_ES;
   // Generate array of years (current year and past 5 years)
   const generateYears = () => {
     const currentYear = new Date().getFullYear();
