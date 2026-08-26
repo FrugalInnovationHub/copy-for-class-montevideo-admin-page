@@ -109,6 +109,7 @@ const normalizeRequiredNames = names => {
 
 export const createMaterial = async (names, photoUrl = '') => {
   const localizedNames = normalizeRequiredNames(names);
+  if (!photoUrl) throw new Error('La foto del material es obligatoria');
   const id = slugify(localizedNames.es || localizedNames.en);
   if (!id) throw new Error('El nombre del material debe contener letras o números');
 

@@ -92,6 +92,7 @@ const ActiveMaterials = () => {
   const handleCreateMaterial = event => {
     event.preventDefault();
     if (!newMaterialNames.es.trim() || !newMaterialNames.en.trim()) return;
+    if (!newMaterialPhoto) return;
     runAction('create-material', async () => {
       const materialLabel = newMaterialNames.es || newMaterialNames.en;
       const photoUrl = newMaterialPhoto ? await uploadMaterialPhoto(newMaterialPhoto, materialLabel) : '';
@@ -126,6 +127,7 @@ const ActiveMaterials = () => {
       en: editMaterialNames.en.trim(),
     };
     if (!names.es || !names.en) return;
+    if (!editMaterialPhoto) return;
 
     runAction(`material-${editingMaterial.id}`, async () => {
       const changes = {};
@@ -138,11 +140,9 @@ const ActiveMaterials = () => {
           names,
         });
       }
-      if (editMaterialPhoto) {
-        const uploadedPhotoUrl = await uploadMaterialPhoto(editMaterialPhoto, names.es || names.en);
-        Object.assign(changes, { photoUrl: uploadedPhotoUrl, imageUrl: uploadedPhotoUrl });
-        await updateMaterial(editingMaterial.id, { photoUrl: uploadedPhotoUrl, imageUrl: uploadedPhotoUrl });
-      }
+      const uploadedPhotoUrl = await uploadMaterialPhoto(editMaterialPhoto, names.es || names.en);
+      Object.assign(changes, { photoUrl: uploadedPhotoUrl, imageUrl: uploadedPhotoUrl });
+      await updateMaterial(editingMaterial.id, { photoUrl: uploadedPhotoUrl, imageUrl: uploadedPhotoUrl });
       if (Object.keys(changes).length === 0) {
         handleCancelMaterialEdit();
         return;
@@ -234,11 +234,11 @@ const ActiveMaterials = () => {
                 className="sr-only"
               />
               <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">{t('Subir foto')}</span>
-              <span className="max-w-28 truncate text-xs">{newMaterialPhoto?.name || t('Sin foto')}</span>
+              <span className="max-w-28 truncate text-xs">{newMaterialPhoto?.name || t('Foto obligatoria')}</span>
             </label>
             <button
               type="submit"
-              disabled={!newMaterialNames.es.trim() || !newMaterialNames.en.trim() || saving === 'create-material'}
+              disabled={!newMaterialNames.es.trim() || !newMaterialNames.en.trim() || !newMaterialPhoto || saving === 'create-material'}
               className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving === 'create-material' ? t('Guardando...') : `+ ${t('Agregar Material')}`}
@@ -363,12 +363,12 @@ const ActiveMaterials = () => {
                             className="sr-only"
                           />
                           <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">{t('Cambiar foto')}</span>
-                          <span className="max-w-32 truncate text-xs">{editMaterialPhoto?.name || t('Mantener foto actual')}</span>
+                          <span className="max-w-32 truncate text-xs">{editMaterialPhoto?.name || t('Foto obligatoria')}</span>
                         </label>
                         <div className="flex gap-2">
                           <button
                             type="submit"
-                            disabled={!editMaterialNames.es.trim() || !editMaterialNames.en.trim() || isSaving}
+                            disabled={!editMaterialNames.es.trim() || !editMaterialNames.en.trim() || !editMaterialPhoto || isSaving}
                             className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
                           >
                             {isSaving ? t('Guardando...') : t('Guardar')}
