@@ -1427,16 +1427,18 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                                   <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
                               </Pie>
-                              <Legend
-                                verticalAlign="bottom"
-                                height={64}
-                                wrapperStyle={{ paddingTop: 10, marginTop: 16 }}
-                                formatter={(value, entry) => (
-                                  <span style={{ color: '#000000' }}>
-                                    {value}
-                                  </span>
-                                )}
-                              />
+                              {!isMobile && (
+  <Legend
+    verticalAlign="bottom"
+    height={64}
+    wrapperStyle={{ paddingTop: 10, marginTop: 16 }}
+    formatter={(value, entry) => (
+      <span style={{ color: '#000000' }}>
+        {value}
+      </span>
+    )}
+  />
+)}
                               <Tooltip
                                 formatter={(value, name) => [
                                   `${Math.round(value).toLocaleString()} kg`,
@@ -1461,17 +1463,19 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                           <XAxis dataKey="month" angle={-45} textAnchor="end" interval={0} height={70} />
                           <YAxis />
                           <Tooltip formatter={(value) => `${Math.round(value).toLocaleString()} kg`} />
-                          <Legend
-                            verticalAlign="bottom"
-                            height={44}
-                            align="center"
-                            wrapperStyle={{ paddingTop: 40, marginTop: 16 }}
-                            formatter={(value, entry) => (
-                              <span style={{ color: '#000000' }}>
-                                {value}
-                              </span>
-                            )}
-                          />
+{!isMobile && (
+  <Legend
+    verticalAlign="bottom"
+    height={44}
+    align="center"
+    wrapperStyle={{ paddingTop: 40, marginTop: 16 }}
+    formatter={(value, entry) => (
+      <span style={{ color: '#000000' }}>
+        {value}
+      </span>
+    )}
+  />
+)}
                           <Bar dataKey="plasticos" name="Plásticos (kg/mes)" stackId="a" fill={MATERIAL_PALETTE.plasticos.bar} />
                           <Bar dataKey="papel_carton" name="Papel y cartón (kg/mes)" stackId="a" fill={MATERIAL_PALETTE.papel_carton.bar} />
                           <Bar dataKey="organico" name="Orgánicos (kg/mes)" stackId="a" fill={MATERIAL_PALETTE.organico.bar} />
