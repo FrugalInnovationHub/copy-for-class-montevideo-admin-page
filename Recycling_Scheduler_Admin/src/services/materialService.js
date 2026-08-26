@@ -1,5 +1,6 @@
 import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
-import { db } from '../../firebase.js';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { db, storage } from '../../firebase.js';
 import { MONTEVIDEO_MATERIAL_PRESETS } from '../data/montevideoMaterialPresets.js';
 
 const materialsCollection = collection(db, 'materials');
@@ -29,6 +30,17 @@ const statusFromData = data => (
   data.status || (data.archived === true ? 'archived' : data.active === false ? 'inactive' : 'active')
 );
 
+export const uploadMaterialPhoto = async (file, materialName) => {
+  if (!file) return '';
+  if (!file.type?.startsWith('image/')) throw new Error('El archivo debe ser una imagen');
+
+  const safeName = slugify(materialName) || 'material';
+  const safeFileName = file.name.replace(/\s+/g, '_');
+  const storageRef = ref(storage, `materials/photos/${safeName}_${Date.now()}_${safeFileName}`);
+  const snapshot = await uploadBytes(storageRef, file);
+  return getDownloadURL(snapshot.ref);
+};
+
 const normalizeEmbeddedSubMaterials = (value, language) => (
   Array.isArray(value)
     ? value.map(item => ({
@@ -51,6 +63,7 @@ const normalizeDocument = (snapshot, language) => {
     name: localizedName(data, language) || snapshot.id,
     names: data.names || null,
     status: statusFromData(data),
+    photoUrl: data.photoUrl || data.imageUrl || '',
     subMaterials: normalizeEmbeddedSubMaterials(data.subMaterials, language),
     createdAt: data.createdAt || null,
     updatedAt: data.updatedAt || null,
@@ -94,7 +107,7 @@ const normalizeRequiredNames = names => {
   return { es, en };
 };
 
-export const createMaterial = async names => {
+export const createMaterial = async (names, photoUrl = '') => {
   const localizedNames = normalizeRequiredNames(names);
   const id = slugify(localizedNames.es || localizedNames.en);
   if (!id) throw new Error('El nombre del material debe contener letras o números');
@@ -108,6 +121,8 @@ export const createMaterial = async names => {
     status: 'active',
     active: true,
     archived: false,
+    photoUrl,
+    imageUrl: photoUrl,
     workflows: ['both'],
     hasSubMaterials: false,
     createdAt: serverTimestamp(),
