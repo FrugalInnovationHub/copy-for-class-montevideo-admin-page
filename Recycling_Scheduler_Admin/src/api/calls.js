@@ -13,7 +13,7 @@ export const getClients = async (setClients) => {
   try {
     const q = query(collection(db, "clients"), qLimit(100));
     const snap = await getDocs(q);
-    const list = snap.docs.map((d) => d.data());
+    const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     if (typeof setClients === "function") setClients(list);
     return list;
   } catch (e) {
@@ -31,7 +31,7 @@ export const getClient = async (id, setClient) => {
     const ref = doc(db, "clients", id);
     const snap = await getDoc(ref);
     if (!snap.exists()) throw new Error(`Client ${id} not found`);
-    const obj = snap.data();
+    const obj = { id: snap.id, ...snap.data() };
     if (typeof setClient === "function") setClient(obj);
     return obj;
   } catch (e) {
@@ -96,7 +96,7 @@ export const getUsers = async (setUsers) => {
   try {
     const q = query(collection(db, "users"), qLimit(100));
     const snap = await getDocs(q);
-    const list = snap.docs.map(d => d.data()); // raw only
+    const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     if (typeof setUsers === "function") setUsers(list);
     return list;
   } catch (e) {
@@ -114,7 +114,7 @@ export const getUser = async (id, setUser) => {
     const ref = doc(db, "users", id);
     const snap = await getDoc(ref);
     if (!snap.exists()) throw new Error(`User ${id} not found`);
-    const obj = snap.data(); // raw only
+    const obj = { id: snap.id, ...snap.data() };
     if (typeof setUser === "function") setUser(obj);
     return obj;
   } catch (e) {
@@ -178,7 +178,7 @@ export const getClassifications = async (clientId) => {
     );
     const snap = await getDocs(q);
     // return plain objects exactly as stored in Firestore
-    return snap.docs.map((d) => d.data());
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   } catch (e) {
     console.error(e);
     throw e;

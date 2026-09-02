@@ -6,8 +6,13 @@ import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, BarChart, Ba
 import { useReactToPrint } from 'react-to-print';
 import { generatePDFReport } from '../helpers/generatePDF';
 import { PencilSquareIcon, ArrowDownTrayIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useLanguage } from '../i18n/LanguageContext';
+//import { useLanguage } from '../i18n/LanguageContext';
+import useIsMobile from '../components/hooks/useIsMobile';
+
 
 const StatisticReports = () => {
+  const { language, t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -18,6 +23,8 @@ const StatisticReports = () => {
   const [aiSummary, setAiSummary] = useState('');
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
+  const isMobile = useIsMobile();
+
 
   // Edit mode state
   const [isEditMode, setIsEditMode] = useState(false);
@@ -72,18 +79,26 @@ const StatisticReports = () => {
       return;
     }
 
-    const reportTitle = getReportHeaderTitle();
+    const reportTitle = t(getReportHeaderTitle());
     const chartTitle = getChartTitle();
 
     await generatePDFReport({
       selectedClient,
       selectedYear,
       selectedMonth,
-      monthlyData,
+      monthlyData: monthlyData.map(row => ({
+        ...row,
+        month: t(row.month),
+        monthFull: t(row.monthFull),
+      })),
       totals,
-      pieChartData,
+      pieChartData: pieChartData.map(item => ({ ...item, name: t(item.name) })),
       reportTitle,
-      chartTitle,
+      chartTitle: {
+        ...chartTitle,
+        main: t(chartTitle.main),
+        subtitle: t(chartTitle.subtitle),
+      },
       aiSummary,
       editedSummary,
       committedSummary
@@ -118,8 +133,8 @@ const StatisticReports = () => {
       // Format report data for AI
       const reportData = {
         client: selectedClient.client_name,
-        year: selectedYear === "last_12_months" ? "Últimos 12 Meses" : selectedYear,
-        month: selectedMonth !== '' ? MONTHS[parseInt(selectedMonth)] : 'Todos los meses',
+        year: selectedYear === "last_12_months" ? t("Últimos 12 Meses") : selectedYear,
+        month: selectedMonth !== '' ? t(MONTHS[parseInt(selectedMonth)]) : t('Todos los meses'),
         totals: {
           plasticos: totals.plasticos || 0,
           papel_carton: totals.papel_carton || 0,
@@ -141,7 +156,24 @@ const StatisticReports = () => {
       const totalWeight = reportData.totals.plasticos + reportData.totals.papel_carton +
         reportData.totals.organico + reportData.totals.otros + reportData.totals.descarte;
 
-      const prompt = `Analiza los siguientes datos de gestión de residuos y genera un resumen ejecutivo narrativo en español:
+      const prompt = language === 'en' ? `Analyze the following waste-management data and write a professional executive summary in English:
+
+Client: ${reportData.client}
+Period: ${reportData.month} ${reportData.year}
+
+Material totals:
+- Plastics: ${Math.round(reportData.totals.plasticos).toLocaleString()} kg
+- Paper and cardboard: ${Math.round(reportData.totals.papel_carton).toLocaleString()} kg
+- Organic waste: ${Math.round(reportData.totals.organico).toLocaleString()} kg
+- Other: ${Math.round(reportData.totals.otros).toLocaleString()} kg
+- Landfill waste: ${Math.round(reportData.totals.descarte).toLocaleString()} kg
+
+Overall total: ${Math.round(totalWeight).toLocaleString()} kg
+
+Monthly data:
+${reportData.monthlyData.map(row => `- ${row.month}: ${Math.round((row.plasticos + row.papel_carton + row.organico + row.otros + row.descarte)).toLocaleString()} kg`).join('\n')}
+
+Identify patterns, trends, the most and least collected materials, monthly variation, and opportunities for improvement. Write no more than 200 words as connected professional prose. Return only the summary.` : `Analiza los siguientes datos de gestión de residuos y genera un resumen ejecutivo narrativo en español:
 
 Cliente: ${reportData.client}
 Período: ${reportData.month} ${reportData.year}
@@ -214,7 +246,10 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
         const avgSecondHalf = monthlyTotals.slice(Math.ceil(monthlyTotals.length / 2))
           .reduce((sum, m) => sum + m.total, 0) / (monthlyTotals.length - Math.ceil(monthlyTotals.length / 2));
         const trend = avgSecondHalf > avgFirstHalf ? 'creciente' : avgSecondHalf < avgFirstHalf ? 'decreciente' : 'estable';
-        const trendChange = Math.abs(((avgSecondHalf - avgFirstHalf) / avgFirstHalf) * 100);
+        //const trendChange = Math.abs(((avgSecondHalf - avgFirstHalf) / avgFirstHalf) * 100);
+        const trendChange = avgFirstHalf > 0
+  ? Math.abs(((avgSecondHalf - avgFirstHalf) / avgFirstHalf) * 100)
+  : (avgSecondHalf > 0 ? 100 : 0);
 
         // Build narrative summary
         let summary = `Durante el período ${reportData.month} ${reportData.year}, ${reportData.client} ha gestionado un total de ${Math.round(totalWeight).toLocaleString()} kg de residuos. `;
@@ -264,7 +299,42 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
 
         summary += `Estos datos proporcionan una base sólida para optimizar las estrategias de gestión de residuos y mejorar los procesos de reciclaje en el futuro.`;
 
-        setAiSummary(summary);
+        if (language === 'en') {
+          const englishMaterialNames = {
+            plasticos: 'plastics',
+            papel_carton: 'paper and cardboard',
+            organico: 'organic waste',
+            otros: 'other materials',
+            descarte: 'landfill waste'
+          };
+          const englishTopName = englishMaterialNames[topMaterial[0]] || 'the leading material';
+          let englishSummary = `During ${reportData.month} ${reportData.year}, ${reportData.client} managed a total of ${Math.round(totalWeight).toLocaleString()} kg of waste. `;
+          englishSummary += `${englishTopName} was the dominant material at ${topMaterialPct}% of the total (${Math.round(topMaterial[1]).toLocaleString()} kg). `;
+
+          if (bottomMaterial && bottomMaterial[1] > 0) {
+            const bottomPct = Math.round((bottomMaterial[1] / totalWeight) * 100);
+            englishSummary += `${englishMaterialNames[bottomMaterial[0]] || 'The least collected material'} represented ${bottomPct}% of the total, indicating comparatively low generation. `;
+          }
+
+          if (monthlyTotals.length > 1) {
+            englishSummary += `${bestMonth.month} recorded the highest monthly collection (${Math.round(bestMonth.total).toLocaleString()} kg)`;
+            if (worstMonth.month !== bestMonth.month) {
+              englishSummary += `, while ${worstMonth.month} recorded the lowest (${Math.round(worstMonth.total).toLocaleString()} kg)`;
+            }
+            englishSummary += '. ';
+            if (monthlyTotals.length >= 3) {
+              const englishTrend = trend === 'creciente' ? 'increasing' : trend === 'decreciente' ? 'decreasing' : 'stable';
+              englishSummary += `The overall trend was ${englishTrend}`;
+              if (trendChange > 5) englishSummary += `, with a significant variation of ${Math.round(trendChange)}%`;
+              englishSummary += '. ';
+            }
+          }
+
+          englishSummary += 'These results provide a sound basis for improving waste-management strategies and recycling processes.';
+          setAiSummary(englishSummary);
+        } else {
+          setAiSummary(summary);
+        }
         return;
       }
 
@@ -282,7 +352,9 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
           messages: [
             {
               role: 'system',
-              content: 'Eres un experto analista de gestión de residuos que genera resúmenes ejecutivos concisos y profesionales en español.'
+              content: language === 'en'
+                ? 'You are a waste-management analyst who writes concise, professional executive summaries in English.'
+                : 'Eres un experto analista de gestión de residuos que genera resúmenes ejecutivos concisos y profesionales en español.'
             },
             {
               role: 'user',
@@ -327,6 +399,14 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
       setLoadingSummary(false);
     }
   };
+
+  useEffect(() => {
+    if (reportGenerated && collections.length > 0 && !isEditMode && !committedSummary) {
+      generateAISummary();
+    }
+    // Regenerate generated prose in the newly selected language.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
 
   // Fetch all clients on component mount
   useEffect(() => {
@@ -523,11 +603,17 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
     'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
   ];
 
-  const MONTHS_SHORT = [
+  const MONTHS_SHORT_ES = [
     'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
     'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
   ];
 
+  const MONTHS_SHORT_EN = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  const MONTHS_SHORT = language === 'en' ? MONTHS_SHORT_EN : MONTHS_SHORT_ES;
   // Generate array of years (current year and past 5 years)
   const generateYears = () => {
     const currentYear = new Date().getFullYear();
@@ -690,6 +776,17 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
     otros: monthlyData.reduce((sum, row) => sum + (row.otros || 0), 0),
     descarte: monthlyData.reduce((sum, row) => sum + (row.descarte || 0), 0)
   } : {};
+
+  // Diversion rate: everything that isn't landfill (descarte), as a % of total weight
+  const totalWeightForDiversion = (totals.plasticos || 0) + (totals.papel_carton || 0) +
+    (totals.organico || 0) + (totals.otros || 0) + (totals.descarte || 0);
+  const diversionRate = totalWeightForDiversion > 0
+    ? Math.round(((totalWeightForDiversion - (totals.descarte || 0)) / totalWeightForDiversion) * 100)
+    : null;
+  const diversionColor = diversionRate === null ? '#6b7280'
+    : diversionRate >= 75 ? '#16a34a'
+    : diversionRate >= 50 ? '#d97706'
+    : '#dc2626';
 
   // Unified color palette for all materials (provided palette)
   const MATERIAL_PALETTE = {
@@ -1122,7 +1219,7 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                       {isEditMode && <span className="ml-3 text-blue-600 text-lg">(Modo Edición)</span>}
                     </h2>
                     <p className="text-center text-lg mt-2" style={{ color: 'rgba(0,0,0,0.6)' }}>
-                      {selectedClient.client_name} - {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      {selectedClient.client_name} - {new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                     {loadingCollections && (
                       <div className="w-8 h-8 mt-2 mx-auto">
@@ -1266,12 +1363,29 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                 </div>
               )}
 
+                            {/* Diversion Rate KPI */}
+              {selectedClient && collections.length > 0 && diversionRate !== null && (
+                <div className="flex flex-col items-center justify-center w-full mt-4 mb-4 p-6 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)' }}>
+                  <span className="text-sm font-semibold uppercase tracking-wide" style={{ color: 'rgba(0,0,0,0.6)' }}>
+                    {language === 'es' ? 'Tasa de Desvío' : 'Diversion Rate'}
+                  </span>
+                  <span className="text-6xl font-extrabold mt-1" style={{ color: diversionColor }}>
+                    {diversionRate}%
+                  </span>
+                  <span className="text-xs mt-1" style={{ color: 'rgba(0,0,0,0.5)' }}>
+                    {language === 'es'
+                      ? 'del peso total desviado del relleno sanitario'
+                      : 'of total weight diverted from landfill'}
+                  </span>
+                </div>
+              )}
+
               {/* Charts Section: Pie and Bar charts together */}
               {selectedClient && collections.length > 0 && pieChartData.length > 0 && monthlyData.length > 0 && (
                 <div>
-                  <div className="flex flex-row flex-wrap items-start justify-between w-full mt-4 mb-8 gap-x-0 gap-y-1">
+                  <div className="flex flex-col md:flex-row flex-wrap items-start justify-between w-full mt-4 mb-8 gap-y-4 md:gap-x-0 md:gap-y-1">
                     {/* Pie Chart */}
-                    <div className="w-[49%] p-3 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)', height: '720px' }}>
+                    <div className="w-full md:w-[49%] p-3 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)', height: isMobile ? '480px' : '720px' }}>
                       <div className="text-center mb-2">
                         <h3 className="text-2xl font-bold" style={{ color: 'rgba(0,0,0,0.7)' }}>
                           {getChartTitle().main}
@@ -1313,16 +1427,18 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                                   <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
                               </Pie>
-                              <Legend
-                                verticalAlign="bottom"
-                                height={64}
-                                wrapperStyle={{ paddingTop: 10, marginTop: 16 }}
-                                formatter={(value, entry) => (
-                                  <span style={{ color: '#000000' }}>
-                                    {value}
-                                  </span>
-                                )}
-                              />
+                              {!isMobile && (
+  <Legend
+    verticalAlign="bottom"
+    height={64}
+    wrapperStyle={{ paddingTop: 10, marginTop: 16 }}
+    formatter={(value, entry) => (
+      <span style={{ color: '#000000' }}>
+        {value}
+      </span>
+    )}
+  />
+)}
                               <Tooltip
                                 formatter={(value, name) => [
                                   `${Math.round(value).toLocaleString()} kg`,
@@ -1336,7 +1452,7 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                     </div>
 
                     {/* Bar Chart - Gestión Residuos (stacked) */}
-                    <div className="w-[49%] p-3 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)', height: '720px' }}>
+                    <div className="w-full md:w-[49%] p-3 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)', height: isMobile ? '480px' : '720px' }}>
                       <div className="text-center mb-8">
                         <span className="text-2xl font-bold mr-2" style={{ color: '#dc2626' }}>{selectedYear === "last_12_months" ? "ÚLTIMOS 12 MESES" : selectedYear}</span>
                         <span className="text-2xl font-bold" style={{ color: 'rgba(0,0,0,0.7)' }}>GESTIÓN RESIDUOS</span>
@@ -1347,17 +1463,19 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                           <XAxis dataKey="month" angle={-45} textAnchor="end" interval={0} height={70} />
                           <YAxis />
                           <Tooltip formatter={(value) => `${Math.round(value).toLocaleString()} kg`} />
-                          <Legend
-                            verticalAlign="bottom"
-                            height={44}
-                            align="center"
-                            wrapperStyle={{ paddingTop: 40, marginTop: 16 }}
-                            formatter={(value, entry) => (
-                              <span style={{ color: '#000000' }}>
-                                {value}
-                              </span>
-                            )}
-                          />
+{!isMobile && (
+  <Legend
+    verticalAlign="bottom"
+    height={44}
+    align="center"
+    wrapperStyle={{ paddingTop: 40, marginTop: 16 }}
+    formatter={(value, entry) => (
+      <span style={{ color: '#000000' }}>
+        {value}
+      </span>
+    )}
+  />
+)}
                           <Bar dataKey="plasticos" name="Plásticos (kg/mes)" stackId="a" fill={MATERIAL_PALETTE.plasticos.bar} />
                           <Bar dataKey="papel_carton" name="Papel y cartón (kg/mes)" stackId="a" fill={MATERIAL_PALETTE.papel_carton.bar} />
                           <Bar dataKey="organico" name="Orgánicos (kg/mes)" stackId="a" fill={MATERIAL_PALETTE.organico.bar} />
@@ -1399,5 +1517,5 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
   )
 }
 
-export default StatisticReports
 
+export default StatisticReports
