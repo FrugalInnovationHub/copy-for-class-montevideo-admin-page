@@ -59,17 +59,26 @@ To expose the server to other devices on the local network:
 npm run dev -- --host
 ```
 
-### Node.js installed at `E:\Nodejs`
+### Node.js is not found
 
-If PowerShell cannot find `node` or `npm`, add the portable installation to the current terminal session:
+Verify that Node.js and npm are available:
 
-```powershell
-$env:Path = "E:\Nodejs;$env:Path"
-npm install
-npm run dev
+```bash
+node --version
+npm --version
 ```
 
-For a permanent setup, add `E:\Nodejs` to the Windows user `Path` environment variable and reopen the terminal.
+If either command is not found, install Node.js 18 or newer using the installer or version manager appropriate for your operating system, then reopen the terminal. If Node.js is already installed in a custom or portable location, add that installation directory to your user `PATH` environment variable.
+
+For a temporary PowerShell session on Windows, replace the example path below with the directory that contains `node.exe`:
+
+```powershell
+$env:Path = "C:\path\to\nodejs;$env:Path"
+node --version
+npm --version
+```
+
+After both commands succeed, continue with `npm install` and `npm run dev` from the project root.
 
 ## Scripts
 
