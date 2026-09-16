@@ -20,7 +20,6 @@ const ROLE_BADGE_STYLES = {
 const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
-  const [saveUserResponse, setSaveUserResponse] = useState(null);
   const [showAddUserMenu, setShowAddUserMenu] = useState(false);
   const [createUserFormData, setCreateUserFormData] = useState({
     first_name: '',
@@ -41,20 +40,28 @@ const UsersPage = () => {
   };
 
   const handleUpdateUser = async (id, updatedData) => {
+    const previousUser = users.find(user => user.id === id);
     try {
       setUsers(prev => prev.map(u => (u.id === id ? { ...u, ...updatedData } : u)));
       await calls.editUser(updatedData, id);
     } catch (e) {
       console.error(e);
+      if (previousUser) {
+        setUsers(prev => prev.map(user => (user.id === id ? previousUser : user)));
+      }
+      alert('No se pudo actualizar el usuario. Inténtalo de nuevo.');
     }
   };
 
   const handleDeleteUser = async (id) => {
+    const previousUsers = users;
     try {
       setUsers(prev => prev.filter(u => u.id !== id));
       await calls.deleteUser(id);
     } catch (e) {
       console.error(e);
+      setUsers(previousUsers);
+      alert('No se pudo eliminar el usuario. Inténtalo de nuevo.');
     }
   };
 
@@ -76,11 +83,14 @@ const UsersPage = () => {
       const { first_name, last_name, role } = createUserFormData;
       if (!first_name || !last_name || !role) return;
 
-      setUsers(prev => [createUserFormData, ...prev]);
-      await calls.createUser(createUserFormData, setSaveUserResponse);
+      const newUser = { ...createUserFormData };
+      setUsers(prev => [newUser, ...prev]);
+      await calls.createUser(newUser);
       handleCloseAddUserMenu();
     } catch (e) {
       console.error(e);
+      setUsers(prev => prev.filter(user => user.id !== createUserFormData.id));
+      alert('No se pudo crear el usuario. Inténtalo de nuevo.');
     }
   };
 

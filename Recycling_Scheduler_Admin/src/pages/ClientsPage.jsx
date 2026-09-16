@@ -8,7 +8,6 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const ClientsPage = () => {
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
-  const [saveClientREsponse, setSaveClientResponse] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
   const [showAddClientMenu, setShowAddClientMenu] = useState(false);
   const [createClientFormData, setCreateClientFormData] = useState({
@@ -55,7 +54,8 @@ const ClientsPage = () => {
       const { client_name } = createClientFormData;
       if (!client_name) return;
 
-      setClients(prev => [createClientFormData, ...prev]);
+      const newClient = { ...createClientFormData };
+      setClients(prev => [newClient, ...prev]);
 
       await createClient(
         {
@@ -73,22 +73,28 @@ const ClientsPage = () => {
             contact_name: loc.contact_name,
             contact_phone: loc.contact_phone,
           })),
-        },
-        setSaveClientResponse
+        }
       );
 
       handleCloseAddClientMenu();
     } catch (err) {
       console.error(err);
+      setClients(prev => prev.filter(client => client.id !== createClientFormData.id));
+      alert('No se pudo crear el cliente. Inténtalo de nuevo.');
     }
   };
 
   const handleUpdateClient = async (id, updatedData) => {
+    const previousClient = clients.find(client => client.id === id);
     try {
       setClients(prev => prev.map(c => (c.id === id ? { ...c, ...updatedData } : c)));
       await editClient(updatedData, id);
     } catch (e) {
       console.error(e);
+      if (previousClient) {
+        setClients(prev => prev.map(client => (client.id === id ? previousClient : client)));
+      }
+      alert('No se pudo actualizar el cliente. Inténtalo de nuevo.');
     }
   };
 

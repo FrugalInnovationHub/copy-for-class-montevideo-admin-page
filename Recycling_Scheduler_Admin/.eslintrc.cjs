@@ -1,0 +1,46 @@
+module.exports = {
+  root: true,
+  env: {
+    browser: true,
+    es2022: true,
+    node: true,
+  },
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+  ],
+  ignorePatterns: [
+    'dist/',
+    'node_modules/',
+    'src/pages/*LEGACY.jsx',
+    'src/pages/StatisticReports copy.jsx',
+    'src/components/Popups/*LEGACY.jsx',
+    'src/components/ClientRow.jsx',
+    'src/components/Menu.jsx',
+    'src/components/PickupItem.jsx',
+    'src/components/PickupsTable.jsx',
+    'src/components/UsersTable.jsx',
+    'src/components/Popups/',
+    'src/pages/AppDownload.jsx',
+    'src/pages/client_details.jsx',
+    'src/pages/reports.jsx',
+    'src/helpers/SortButton.jsx',
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    ecmaFeatures: { jsx: true },
+  },
+  plugins: ['react-refresh'],
+  settings: {
+    react: { version: 'detect' },
+  },
+  rules: {
+    'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
+    'react-refresh/only-export-components': 'off',
+    'no-unused-vars': 'off',
+    'react/no-unescaped-entities': 'off',
+  },
+};

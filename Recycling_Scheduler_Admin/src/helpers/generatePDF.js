@@ -106,7 +106,7 @@ export const generatePDFReport = async ({
       for (const [full, abbr] of Object.entries(monthMap)) {
         if (upperMonth.includes(full)) {
           // If there's a year suffix, convert 4-digit year to '24 format
-          const yearMatch = monthName.match(/\s+(\d{4}|\'\d{2})/);
+          const yearMatch = monthName.match(/\s+(\d{4}|'\d{2})/);
           if (yearMatch) {
             let yearStr = yearMatch[1];
             // Convert 4-digit year (e.g., 2024) to '24 format

@@ -1,32 +1,348 @@
-import React from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import NavigationWrapper from '../components/Navigation/NavigationWrapper';
+import Spinner from '../components/Navigation/Spinner';
+import { useLanguage } from '../i18n/LanguageContext';
+import {
+  addSubMaterial,
+  createMaterial,
+  getMaterials,
+  setMaterialStatus,
+  syncMontevideoMaterialPresets,
+  updateMaterial,
+  updateMaterialNames,
+  updateSubMaterial,
+} from '../services/materialService';
+
+const statusStyles = {
+  active: 'border-emerald-600 bg-emerald-600 text-white',
+  inactive: 'border-amber-500 bg-amber-500 text-white',
+  archived: 'border-gray-600 bg-gray-600 text-white',
+};
 
 const ActiveMaterials = () => {
+  const { language, t } = useLanguage();
+  const [materials, setMaterials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState('');
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [newMaterialNames, setNewMaterialNames] = useState({ es: '', en: '' });
+  const [expanded, setExpanded] = useState({});
+  const [subMaterialNames, setSubMaterialNames] = useState({});
+
+  const loadMaterials = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      setMaterials(await getMaterials(language));
+    } catch (loadError) {
+      console.error(loadError);
+      setError(t('No se pudieron cargar los materiales.'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadMaterials();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
+
+  const visibleMaterials = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return materials.filter(material => {
+      if (filter !== 'all' && material.status !== filter) return false;
+      if (!query) return true;
+      return material.name.toLowerCase().includes(query)
+        || material.subMaterials.some(item => item.name.toLowerCase().includes(query));
+    });
+  }, [filter, materials, search]);
+
+  const runAction = async (key, action) => {
+    try {
+      setSaving(key);
+      setError('');
+      setNotice('');
+      await action();
+    } catch (actionError) {
+      console.error(actionError);
+      setError(t(actionError.message || 'No se pudo completar la operación.'));
+    } finally {
+      setSaving('');
+    }
+  };
+
+  const handleLoadPresets = () => {
+    if (!window.confirm(t('Esto creará los materiales predeterminados que falten y restaurará sus nombres, colores y estructura. Los estados y el historial se conservarán. ¿Desea continuar?'))) return;
+    runAction('sync-presets', async () => {
+      await syncMontevideoMaterialPresets();
+      await loadMaterials();
+      setNotice(t('Los materiales predeterminados se inicializaron o restauraron correctamente.'));
+    });
+  };
+
+  const handleCreateMaterial = event => {
+    event.preventDefault();
+    if (!newMaterialNames.es.trim() || !newMaterialNames.en.trim()) return;
+    runAction('create-material', async () => {
+      await createMaterial(newMaterialNames);
+      setNewMaterialNames({ es: '', en: '' });
+      await loadMaterials();
+    });
+  };
+
+  const handleRenameMaterial = material => {
+    const spanishName = window.prompt(t('Nombre en español'), material.names?.es || material.name)?.trim();
+    if (!spanishName) return;
+    const englishName = window.prompt(t('Nombre en inglés'), material.names?.en || material.name)?.trim();
+    if (!englishName) return;
+    runAction(`material-${material.id}`, async () => {
+      await updateMaterialNames(material.id, { es: spanishName, en: englishName });
+      setMaterials(current => current.map(item => item.id === material.id
+        ? { ...item, name: language === 'en' ? englishName : spanishName, names: { es: spanishName, en: englishName } }
+        : item));
+    });
+  };
+
+  const handleMaterialStatus = (material, status) => {
+    const action = status === 'archived' ? t('archivar') : status === 'active' ? t('activar') : t('pausar');
+    if (!window.confirm(`${t('¿Desea')} ${action} “${material.name}”?`)) return;
+    runAction(`material-${material.id}`, async () => {
+      await setMaterialStatus(material.id, status);
+      setMaterials(current => current.map(item => item.id === material.id ? { ...item, status } : item));
+    });
+  };
+
+  const handleAddSubMaterial = material => {
+    const names = subMaterialNames[material.id] || { es: '', en: '' };
+    if (!names.es.trim() || !names.en.trim()) return;
+    runAction(`sub-create-${material.id}`, async () => {
+      await addSubMaterial(material, names);
+      setSubMaterialNames(current => ({ ...current, [material.id]: { es: '', en: '' } }));
+      await loadMaterials();
+    });
+  };
+
+  const handleRenameSubMaterial = (material, subMaterial) => {
+    const spanishName = window.prompt(t('Nombre en español'), subMaterial.names?.es || subMaterial.name)?.trim();
+    if (!spanishName) return;
+    const englishName = window.prompt(t('Nombre en inglés'), subMaterial.names?.en || subMaterial.name)?.trim();
+    if (!englishName) return;
+    runAction(`sub-${material.id}-${subMaterial.id}`, async () => {
+      const subMaterials = await updateSubMaterial(material, subMaterial.id, {
+        name: spanishName,
+        names: { es: spanishName, en: englishName },
+      });
+      setMaterials(current => current.map(item => item.id === material.id ? { ...item, subMaterials } : item));
+    });
+  };
+
+  const handleSubMaterialStatus = (material, subMaterial, status) => {
+    runAction(`sub-${material.id}-${subMaterial.id}`, async () => {
+      const subMaterials = await updateSubMaterial(material, subMaterial.id, { status });
+      setMaterials(current => current.map(item => item.id === material.id ? { ...item, subMaterials } : item));
+    });
+  };
+
   return (
     <NavigationWrapper>
-      <div className="flex items-center justify-center min-h-[80vh] p-6">
-        <div className="bg-white/70 border border-white/60 backdrop-blur-md rounded-3xl p-12 max-w-md text-center shadow-xl flex flex-col items-center gap-6">
-          {/* Construction/Maintenance Icon */}
-          <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm border border-blue-100/50 animate-pulse">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17 17.25 21A2.67 2.67 0 1 1 13.5 17.25l-5.83-5.83m0 0a2.67 2.67 0 1 1-3.75-3.75 2.67 2.67 0 0 1 3.75 3.75Zm0 0 5.83 5.83M12 3v1.5m6.364.364-1.06 1.06M21 12h-1.5m-.364 6.364-1.06-1.06M12 21v-1.5m-6.364-.364 1.06-1.06M3 12h1.5m.364-6.364 1.06 1.06" />
-            </svg>
+      <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-10 sm:px-8">
+        <header className="mb-8 flex flex-col gap-4 pr-28 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight text-gray-800">{t('Gestión de Materiales')}</h1>
+            <p className="mt-2 max-w-2xl text-sm text-gray-500">
+              {t('Administre materiales y submateriales sin eliminar el historial de recolección.')}
+            </p>
           </div>
+          <span className="w-fit rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
+            {materials.filter(item => item.status === 'active').length} {t('activos')}
+          </span>
+        </header>
 
-          <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-bold text-gray-800 tracking-wide">Gestión de Materiales</h1>
-            <p className="text-sm font-semibold text-blue-500 uppercase tracking-widest">En Mantenimiento</p>
+        <section className="mb-6 rounded-3xl border border-white/60 bg-white/70 p-5 shadow-xl backdrop-blur-md">
+          <form onSubmit={handleCreateMaterial} className="flex flex-col gap-3 sm:flex-row">
+            <input
+              value={newMaterialNames.es}
+              onChange={event => setNewMaterialNames(current => ({ ...current, es: event.target.value }))}
+              placeholder={t('Nombre del material en español')}
+              aria-label={t('Nombre del material en español')}
+              maxLength={80}
+              className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+            />
+            <input
+              value={newMaterialNames.en}
+              onChange={event => setNewMaterialNames(current => ({ ...current, en: event.target.value }))}
+              placeholder={t('Nombre del material en inglés')}
+              aria-label={t('Nombre del material en inglés')}
+              maxLength={80}
+              className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+            />
+            <button
+              type="submit"
+              disabled={!newMaterialNames.es.trim() || !newMaterialNames.en.trim() || saving === 'create-material'}
+              className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {saving === 'create-material' ? t('Guardando...') : `+ ${t('Agregar Material')}`}
+            </button>
+          </form>
+          <div className="mt-4 flex flex-col gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-gray-500">
+              {t('Use esta acción solamente para inicializar o restaurar la estructura predeterminada de materiales.')}
+            </p>
+            <button
+              type="button"
+              onClick={handleLoadPresets}
+              disabled={saving === 'sync-presets'}
+              className="shrink-0 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 disabled:opacity-50"
+            >
+              {saving === 'sync-presets' ? t('Restaurando...') : t('Inicializar / Restaurar materiales predeterminados')}
+            </button>
           </div>
+        </section>
 
-          <p className="text-gray-500 text-sm leading-relaxed">
-            Esta sección de administración se encuentra en mantenimiento temporal. Estamos diseñando una nueva interfaz simplificada y moderna para gestionar las categorías de reciclaje de forma más ágil.
-          </p>
+        <section className="mb-6 flex flex-col gap-3 rounded-2xl border border-white/60 bg-white/55 p-4 backdrop-blur sm:flex-row">
+          <input
+            type="search"
+            value={search}
+            onChange={event => setSearch(event.target.value)}
+            placeholder={t('Buscar materiales o submateriales...')}
+            className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white/90 px-4 py-2.5 text-sm outline-none focus:border-blue-500"
+          />
+          <label htmlFor="category-status-filter" className="shrink-0">
+            <select
+              id="category-status-filter"
+              value={filter}
+              onChange={event => setFilter(event.target.value)}
+              className="rounded-xl border border-gray-200 bg-white/90 px-4 py-2.5 text-sm font-semibold text-gray-700"
+            >
+              <option value="all">{t('Todos los estados')}</option>
+              <option value="active">{t('Activos')}</option>
+              <option value="inactive">{t('Pausados')}</option>
+              <option value="archived">{t('Archivados')}</option>
+            </select>
+          </label>
+        </section>
 
-          <div className="text-xs text-gray-400 mt-2">
-            Estará disponible en la próxima actualización.
+        {error && (
+          <div role="alert" className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+            {error}
           </div>
-        </div>
-      </div>
+        )}
+        {notice && (
+          <div role="status" className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+            {notice}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex justify-center py-24"><div className="h-12 w-12"><Spinner /></div></div>
+        ) : visibleMaterials.length === 0 ? (
+          <div className="rounded-3xl border border-white/60 bg-white/70 p-12 text-center text-gray-500 shadow-lg">
+            {t('No se encontraron materiales.')}
+          </div>
+        ) : (
+          <div className="space-y-4 pb-24">
+            {visibleMaterials.map(material => {
+              const isExpanded = expanded[material.id];
+              const isSaving = saving === `material-${material.id}`;
+              return (
+                <article
+                  key={material.id}
+                  className={`overflow-hidden rounded-3xl border shadow-lg backdrop-blur-md ${material.status === 'active' ? 'border-emerald-200 bg-emerald-100/80' : 'border-white/70 bg-white/80'}`}
+                >
+                  <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setExpanded(current => ({ ...current, [material.id]: !isExpanded }))}
+                      className="flex min-w-0 items-center gap-3 text-left"
+                      aria-expanded={Boolean(isExpanded)}
+                    >
+                      <span className={`text-gray-400 transition ${isExpanded ? 'rotate-90' : ''}`}>▶</span>
+                      <span className="min-w-0">
+                        <span className="flex min-w-0 flex-wrap items-center gap-2">
+                          <span className="truncate text-lg font-bold text-gray-800">{material.name}</span>
+                          <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold shadow-sm ${statusStyles[material.status]}`}>
+                            {t(material.status === 'active' ? 'Activo' : material.status === 'inactive' ? 'Pausado' : 'Archivado')}
+                          </span>
+                        </span>
+                        <span className="text-xs text-gray-400">{material.subMaterials.length} {t('submateriales')}</span>
+                      </span>
+                    </button>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button disabled={isSaving} onClick={() => handleRenameMaterial(material)} className="rounded-lg px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50">{t('Editar')}</button>
+                      {material.status !== 'active' && <button disabled={isSaving} onClick={() => handleMaterialStatus(material, 'active')} className="rounded-lg px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50">{t('Activar')}</button>}
+                      {material.status === 'active' && <button disabled={isSaving} onClick={() => handleMaterialStatus(material, 'inactive')} className="rounded-lg px-3 py-2 text-xs font-bold text-amber-700 hover:bg-amber-50">{t('Pausar')}</button>}
+                      {material.status !== 'archived' && <button disabled={isSaving} onClick={() => handleMaterialStatus(material, 'archived')} className="rounded-lg px-3 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100">{t('Archivar')}</button>}
+                    </div>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="border-t border-gray-100 bg-gray-50/60 p-5">
+                      <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+                        <input
+                          value={subMaterialNames[material.id]?.es || ''}
+                          onChange={event => setSubMaterialNames(current => ({
+                            ...current,
+                            [material.id]: { ...(current[material.id] || {}), es: event.target.value },
+                          }))}
+                          placeholder={t('Nombre del submaterial en español')}
+                          aria-label={t('Nombre del submaterial en español')}
+                          maxLength={80}
+                          className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500"
+                        />
+                        <input
+                          value={subMaterialNames[material.id]?.en || ''}
+                          onChange={event => setSubMaterialNames(current => ({
+                            ...current,
+                            [material.id]: { ...(current[material.id] || {}), en: event.target.value },
+                          }))}
+                          placeholder={t('Nombre del submaterial en inglés')}
+                          aria-label={t('Nombre del submaterial en inglés')}
+                          maxLength={80}
+                          className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleAddSubMaterial(material)}
+                          disabled={!subMaterialNames[material.id]?.es?.trim() || !subMaterialNames[material.id]?.en?.trim() || saving === `sub-create-${material.id}`}
+                          className="rounded-xl bg-gray-800 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
+                        >
+                          + {t('Agregar Submaterial')}
+                        </button>
+                      </div>
+
+                      {material.subMaterials.length === 0 ? (
+                        <p className="rounded-xl border border-dashed border-gray-300 p-4 text-center text-sm text-gray-400">{t('Este material no tiene submateriales.')}</p>
+                      ) : (
+                        <ul className="space-y-2">
+                          {material.subMaterials.map(subMaterial => (
+                            <li key={subMaterial.id} className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                              <div className="flex items-center gap-3">
+                                <span className={`h-2.5 w-2.5 rounded-full ${subMaterial.status === 'active' ? 'bg-emerald-500' : subMaterial.status === 'inactive' ? 'bg-amber-500' : 'bg-gray-400'}`} />
+                                <span className="font-semibold text-gray-700">{subMaterial.name}</span>
+                              </div>
+                              <div className="flex gap-2">
+                                <button onClick={() => handleRenameSubMaterial(material, subMaterial)} className="rounded-lg px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50">{t('Editar')}</button>
+                                {subMaterial.status === 'active'
+                                  ? <button onClick={() => handleSubMaterialStatus(material, subMaterial, 'inactive')} className="rounded-lg px-3 py-1.5 text-xs font-bold text-amber-700 hover:bg-amber-50">{t('Pausar')}</button>
+                                  : <button onClick={() => handleSubMaterialStatus(material, subMaterial, 'active')} className="rounded-lg px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50">{t('Activar')}</button>}
+                                {subMaterial.status !== 'archived' && <button onClick={() => handleSubMaterialStatus(material, subMaterial, 'archived')} className="rounded-lg px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-100">{t('Archivar')}</button>}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </main>
     </NavigationWrapper>
   );
 };
