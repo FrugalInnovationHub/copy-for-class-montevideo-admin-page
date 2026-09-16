@@ -7,6 +7,9 @@ import { useReactToPrint } from 'react-to-print';
 import { generatePDFReport } from '../helpers/generatePDF';
 import { PencilSquareIcon, ArrowDownTrayIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useLanguage } from '../i18n/LanguageContext';
+//import { useLanguage } from '../i18n/LanguageContext';
+import useIsMobile from '../components/hooks/useIsMobile';
+
 
 const StatisticReports = () => {
   const { language, t } = useLanguage();
@@ -20,6 +23,8 @@ const StatisticReports = () => {
   const [aiSummary, setAiSummary] = useState('');
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
+  const isMobile = useIsMobile();
+
 
   // Edit mode state
   const [isEditMode, setIsEditMode] = useState(false);
@@ -241,7 +246,10 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
         const avgSecondHalf = monthlyTotals.slice(Math.ceil(monthlyTotals.length / 2))
           .reduce((sum, m) => sum + m.total, 0) / (monthlyTotals.length - Math.ceil(monthlyTotals.length / 2));
         const trend = avgSecondHalf > avgFirstHalf ? 'creciente' : avgSecondHalf < avgFirstHalf ? 'decreciente' : 'estable';
-        const trendChange = Math.abs(((avgSecondHalf - avgFirstHalf) / avgFirstHalf) * 100);
+        //const trendChange = Math.abs(((avgSecondHalf - avgFirstHalf) / avgFirstHalf) * 100);
+        const trendChange = avgFirstHalf > 0
+  ? Math.abs(((avgSecondHalf - avgFirstHalf) / avgFirstHalf) * 100)
+  : (avgSecondHalf > 0 ? 100 : 0);
 
         // Build narrative summary
         let summary = `Durante el período ${reportData.month} ${reportData.year}, ${reportData.client} ha gestionado un total de ${Math.round(totalWeight).toLocaleString()} kg de residuos. `;
@@ -595,11 +603,17 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
     'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
   ];
 
-  const MONTHS_SHORT = [
+  const MONTHS_SHORT_ES = [
     'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
     'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
   ];
 
+  const MONTHS_SHORT_EN = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  const MONTHS_SHORT = language === 'en' ? MONTHS_SHORT_EN : MONTHS_SHORT_ES;
   // Generate array of years (current year and past 5 years)
   const generateYears = () => {
     const currentYear = new Date().getFullYear();
@@ -762,6 +776,17 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
     otros: monthlyData.reduce((sum, row) => sum + (row.otros || 0), 0),
     descarte: monthlyData.reduce((sum, row) => sum + (row.descarte || 0), 0)
   } : {};
+
+  // Diversion rate: everything that isn't landfill (descarte), as a % of total weight
+  const totalWeightForDiversion = (totals.plasticos || 0) + (totals.papel_carton || 0) +
+    (totals.organico || 0) + (totals.otros || 0) + (totals.descarte || 0);
+  const diversionRate = totalWeightForDiversion > 0
+    ? Math.round(((totalWeightForDiversion - (totals.descarte || 0)) / totalWeightForDiversion) * 100)
+    : null;
+  const diversionColor = diversionRate === null ? '#6b7280'
+    : diversionRate >= 75 ? '#16a34a'
+    : diversionRate >= 50 ? '#d97706'
+    : '#dc2626';
 
   // Unified color palette for all materials (provided palette)
   const MATERIAL_PALETTE = {
@@ -1338,12 +1363,29 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                 </div>
               )}
 
+                            {/* Diversion Rate KPI */}
+              {selectedClient && collections.length > 0 && diversionRate !== null && (
+                <div className="flex flex-col items-center justify-center w-full mt-4 mb-4 p-6 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)' }}>
+                  <span className="text-sm font-semibold uppercase tracking-wide" style={{ color: 'rgba(0,0,0,0.6)' }}>
+                    {language === 'es' ? 'Tasa de Desvío' : 'Diversion Rate'}
+                  </span>
+                  <span className="text-6xl font-extrabold mt-1" style={{ color: diversionColor }}>
+                    {diversionRate}%
+                  </span>
+                  <span className="text-xs mt-1" style={{ color: 'rgba(0,0,0,0.5)' }}>
+                    {language === 'es'
+                      ? 'del peso total desviado del relleno sanitario'
+                      : 'of total weight diverted from landfill'}
+                  </span>
+                </div>
+              )}
+
               {/* Charts Section: Pie and Bar charts together */}
               {selectedClient && collections.length > 0 && pieChartData.length > 0 && monthlyData.length > 0 && (
                 <div>
-                  <div className="flex flex-row flex-wrap items-start justify-between w-full mt-4 mb-8 gap-x-0 gap-y-1">
+                  <div className="flex flex-col md:flex-row flex-wrap items-start justify-between w-full mt-4 mb-8 gap-y-4 md:gap-x-0 md:gap-y-1">
                     {/* Pie Chart */}
-                    <div className="w-[49%] p-3 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)', height: '720px' }}>
+                    <div className="w-full md:w-[49%] p-3 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)', height: isMobile ? '480px' : '720px' }}>
                       <div className="text-center mb-2">
                         <h3 className="text-2xl font-bold" style={{ color: 'rgba(0,0,0,0.7)' }}>
                           {getChartTitle().main}
@@ -1385,16 +1427,18 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                                   <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
                               </Pie>
-                              <Legend
-                                verticalAlign="bottom"
-                                height={64}
-                                wrapperStyle={{ paddingTop: 10, marginTop: 16 }}
-                                formatter={(value, entry) => (
-                                  <span style={{ color: '#000000' }}>
-                                    {value}
-                                  </span>
-                                )}
-                              />
+                              {!isMobile && (
+  <Legend
+    verticalAlign="bottom"
+    height={64}
+    wrapperStyle={{ paddingTop: 10, marginTop: 16 }}
+    formatter={(value, entry) => (
+      <span style={{ color: '#000000' }}>
+        {value}
+      </span>
+    )}
+  />
+)}
                               <Tooltip
                                 formatter={(value, name) => [
                                   `${Math.round(value).toLocaleString()} kg`,
@@ -1408,7 +1452,7 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                     </div>
 
                     {/* Bar Chart - Gestión Residuos (stacked) */}
-                    <div className="w-[49%] p-3 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)', height: '720px' }}>
+                    <div className="w-full md:w-[49%] p-3 rounded-3xl" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.4)', height: isMobile ? '480px' : '720px' }}>
                       <div className="text-center mb-8">
                         <span className="text-2xl font-bold mr-2" style={{ color: '#dc2626' }}>{selectedYear === "last_12_months" ? "ÚLTIMOS 12 MESES" : selectedYear}</span>
                         <span className="text-2xl font-bold" style={{ color: 'rgba(0,0,0,0.7)' }}>GESTIÓN RESIDUOS</span>
@@ -1419,17 +1463,19 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
                           <XAxis dataKey="month" angle={-45} textAnchor="end" interval={0} height={70} />
                           <YAxis />
                           <Tooltip formatter={(value) => `${Math.round(value).toLocaleString()} kg`} />
-                          <Legend
-                            verticalAlign="bottom"
-                            height={44}
-                            align="center"
-                            wrapperStyle={{ paddingTop: 40, marginTop: 16 }}
-                            formatter={(value, entry) => (
-                              <span style={{ color: '#000000' }}>
-                                {value}
-                              </span>
-                            )}
-                          />
+{!isMobile && (
+  <Legend
+    verticalAlign="bottom"
+    height={44}
+    align="center"
+    wrapperStyle={{ paddingTop: 40, marginTop: 16 }}
+    formatter={(value, entry) => (
+      <span style={{ color: '#000000' }}>
+        {value}
+      </span>
+    )}
+  />
+)}
                           <Bar dataKey="plasticos" name="Plásticos (kg/mes)" stackId="a" fill={MATERIAL_PALETTE.plasticos.bar} />
                           <Bar dataKey="papel_carton" name="Papel y cartón (kg/mes)" stackId="a" fill={MATERIAL_PALETTE.papel_carton.bar} />
                           <Bar dataKey="organico" name="Orgánicos (kg/mes)" stackId="a" fill={MATERIAL_PALETTE.organico.bar} />
@@ -1471,5 +1517,5 @@ Responde SOLO con el resumen, sin introducción ni conclusiones adicionales.`;
   )
 }
 
-export default StatisticReports
 
+export default StatisticReports

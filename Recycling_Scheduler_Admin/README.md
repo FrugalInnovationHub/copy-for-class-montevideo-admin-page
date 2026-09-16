@@ -2,6 +2,8 @@
 
 Administrative dashboard for the Montevideo recycling scheduler. It manages clients, staff roles, recycling evidence, materials, and statistical reports using Firebase as its data platform.
 
+This README describes the current `review` branch. The branch is the reviewed development version built on top of `main` and is not yet the production baseline unless it is intentionally merged.
+
 ## Features
 
 - Create and edit recycling clients and their locations
@@ -12,7 +14,10 @@ Administrative dashboard for the Montevideo recycling scheduler. It manages clie
 - View statistical reports and export them as PDF
 - Responsive desktop and mobile navigation
 - Persistent Spanish/English interface switching across every active page
-- Manage materials and optional sub-materials with active, paused, and archived states
+- Manage bilingual materials and optional sub-materials with active, paused, and archived states
+- Require and upload a material photo when a material is created or edited; the resulting Firebase Storage URL is shared with the mobile app
+- Restore the common Montevideo material taxonomy while preserving status and history
+- Show a landfill diversion-rate KPI and responsive charts in statistical reports
 
 ## Technology
 
@@ -54,17 +59,26 @@ To expose the server to other devices on the local network:
 npm run dev -- --host
 ```
 
-### Node.js installed at `E:\Nodejs`
+### Node.js is not found
 
-If PowerShell cannot find `node` or `npm`, add the portable installation to the current terminal session:
+Verify that Node.js and npm are available:
 
-```powershell
-$env:Path = "E:\Nodejs;$env:Path"
-npm install
-npm run dev
+```bash
+node --version
+npm --version
 ```
 
-For a permanent setup, add `E:\Nodejs` to the Windows user `Path` environment variable and reopen the terminal.
+If either command is not found, install Node.js 18 or newer using the installer or version manager appropriate for your operating system, then reopen the terminal. If Node.js is already installed in a custom or portable location, add that installation directory to your user `PATH` environment variable.
+
+For a temporary PowerShell session on Windows, replace the example path below with the directory that contains `node.exe`:
+
+```powershell
+$env:Path = "C:\path\to\nodejs;$env:Path"
+node --version
+npm --version
+```
+
+After both commands succeed, continue with `npm install` and `npm run dev` from the project root.
 
 ## Scripts
 
@@ -158,6 +172,25 @@ node inspect_firebase_data.js
 
 Do not run population or upload scripts against production data unless that change is intentional and backed up.
 
+## Changes from `main`
+
+The `review` branch contains the following major changes compared with the original `main` branch:
+
+- Added a shared Spanish/English language context and localized the active administration pages, navigation, charts, labels, and material-management messages.
+- Reworked material management around Firestore-backed bilingual names, optional sub-materials, workflow metadata, stable preset IDs, search, and active/paused/archived filtering.
+- Added preset synchronization so the admin dashboard and Padre Cacho mobile app use the same default material taxonomy.
+- Added required material-photo upload and replacement through Firebase Storage. Material documents expose the URL as both `photoUrl` and `imageUrl` for cross-client compatibility.
+- Improved evidence browsing and uploads, including client/month filtering and more consistent Firebase data handling.
+- Expanded statistical reports with localized month labels, safer trend calculations, a diversion-rate KPI, responsive mobile layouts, and PDF/report refinements.
+- Added ESLint/Vite configuration and focused tests for localization, presets, and material services/workflows.
+
+For the exact file-level comparison, run:
+
+```bash
+git diff --stat main...review
+git log --oneline main..review
+```
+
 ## Troubleshooting
 
 ### `vite` is not recognized
@@ -174,4 +207,4 @@ Run `npm run build` locally and check the browser console. Firebase Hosting is a
 
 ## Git workflow
 
-Active development for the current update is performed on the `update1` branch. Keep `main` unchanged until the update has been reviewed and is intentionally merged.
+This document tracks the `review` branch. Keep `main` unchanged until the reviewed update has been validated and intentionally merged.
